@@ -1,0 +1,5 @@
+Changelog for shopLogistic.
+
+0.0.1-pl
+==============
+- Initial release
