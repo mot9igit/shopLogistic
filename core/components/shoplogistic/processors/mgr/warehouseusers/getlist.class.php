@@ -1,9 +1,9 @@
 <?php
 
-class slStoreUsersGetListProcessor extends modObjectGetListProcessor
+class slWarehouseUsersGetListProcessor extends modObjectGetListProcessor
 {
-    public $objectType = 'slStoreUsers';
-    public $classKey = 'slStoreUsers';
+    public $objectType = 'slWarehouseUsers';
+    public $classKey = 'slWarehouseUsers';
     public $defaultSortField = 'id';
     public $defaultSortDirection = 'DESC';
     //public $permission = 'list';
@@ -34,8 +34,8 @@ class slStoreUsersGetListProcessor extends modObjectGetListProcessor
     {
 		$c->leftJoin('modUser', 'User');
 		$c->leftJoin('modUserProfile', 'UserProfile');
-		$c->leftJoin('slStores', 'Store');
-    	$store_id = trim($this->getProperty('store_id'));
+		$c->leftJoin('slWarehouse', 'Warehouse');
+    	$warehouse_id = trim($this->getProperty('warehouse_id'));
         $query = trim($this->getProperty('query'));
         if ($query) {
             $c->where([
@@ -43,17 +43,19 @@ class slStoreUsersGetListProcessor extends modObjectGetListProcessor
             ]);
         }
 
-        if($store_id){
+        if($warehouse_id){
 			$c->where([
-				'store_id:=' => $store_id,
+				'warehouse_id:=' => $warehouse_id,
 			]);
 		}
 
 		$c->select(
-			$this->modx->getSelectColumns('slStoreUsers', 'slStoreUsers', '') . ',
+			$this->modx->getSelectColumns('slWarehouseUsers', 'slWarehouseUsers', '') . ',
             UserProfile.fullname as user, User.username as user_name,
-            Store.name as store'
+            Warehouse.name as warehouse'
 		);
+        //$c->prepare();
+        //$this->modx->log(1, $c->toSQL());
 
         return $c;
     }
@@ -73,9 +75,9 @@ class slStoreUsersGetListProcessor extends modObjectGetListProcessor
         $array['actions'][] = [
             'cls' => '',
             'icon' => 'icon icon-edit',
-            'title' => $this->modx->lexicon('shoplogistic_storeuser_update'),
+            'title' => $this->modx->lexicon('shoplogistic_warehouseuser_update'),
             //'multiple' => $this->modx->lexicon('shoplogistic_items_update'),
-            'action' => 'updateStoreusers',
+            'action' => 'updateWarehouseUsers',
             'button' => true,
             'menu' => true,
         ];
@@ -84,9 +86,9 @@ class slStoreUsersGetListProcessor extends modObjectGetListProcessor
         $array['actions'][] = [
             'cls' => '',
             'icon' => 'icon icon-trash-o action-red',
-            'title' => $this->modx->lexicon('shoplogistic_storeuser_remove'),
-            'multiple' => $this->modx->lexicon('shoplogistic_storeusers_remove'),
-            'action' => 'removeStoreusers',
+            'title' => $this->modx->lexicon('shoplogistic_warehouseuser_remove'),
+            'multiple' => $this->modx->lexicon('shoplogistic_warehouseusers_remove'),
+            'action' => 'removeWarehouseUsers',
             'button' => true,
             'menu' => true,
         ];
@@ -96,4 +98,4 @@ class slStoreUsersGetListProcessor extends modObjectGetListProcessor
 
 }
 
-return 'slStoreUsersGetListProcessor';
+return 'slWarehouseUsersGetListProcessor';
