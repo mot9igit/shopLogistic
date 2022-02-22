@@ -53,7 +53,7 @@ class shopLogisticHomeManagerController extends modExtraManagerController
      */
     public function loadCustomCssJs()
     {
-        $this->addCss($this->shopLogistic->config['cssUrl'] . 'mgr/main.css');
+        $this->addCss($this->shopLogistic->config['cssUrl'] . 'mgr/shoplogistic.css');
         $this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/shoplogistic.js');
         $this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/misc/utils.js');
         $this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/misc/combo.js');

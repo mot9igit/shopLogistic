@@ -3,9 +3,9 @@
 return [
     'shopLogistic' => [
         'file' => 'shoplogistic',
-        'description' => '',
+        'description' => 'Base functional plugin',
         'events' => [
-            'OnManagerPageInit' => [],
+            'OnDocFormRender' => [],
         ],
     ],
 ];

@@ -83,6 +83,7 @@
     <object class="slWarehouseRemains" table="sl_warehouses_remains" extends="xPDOSimpleObject">
         <field key="product_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="0"/>
         <field key="warehouse_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="0"/>
+        <field key="remains" dbtype="int" attributes="unsigned" phptype="integer" null="true" default="0"/>
         <field key="description" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
         <field key="properties" dbtype="text" phptype="json" null="true"/>
 
@@ -92,6 +93,9 @@
         <index alias="warehouse_id" name="warehouse_id" primary="false" unique="false" type="BTREE">
             <column key="warehouse_id" length="" collation="A" null="false"/>
         </index>
+        <index alias="remains" name="remains" primary="false" unique="false" type="BTREE">
+            <column key="remains" length="" collation="A" null="false"/>
+        </index>
 
         <aggregate alias="Warehouse" class="slWarehouse" local="warehouse_id" foreign="id" cardinality="many" owner="foreign"/>
         <aggregate alias="Product" class="msProduct" local="product_id" foreign="id" cardinality="many" owner="foreign"/>
@@ -100,6 +104,7 @@
     <object class="slStoresRemains" table="sl_stores_remains" extends="xPDOSimpleObject">
         <field key="product_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="0"/>
         <field key="store_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="0"/>
+        <field key="remains" dbtype="int" attributes="unsigned" phptype="integer" null="true" default="0"/>
         <field key="description" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
         <field key="properties" dbtype="text" phptype="json" null="true"/>
 
@@ -108,6 +113,9 @@
         </index>
         <index alias="store_id" name="store_id" primary="false" unique="false" type="BTREE">
             <column key="store_id" length="" collation="A" null="false"/>
+        </index>
+        <index alias="remains" name="remains" primary="false" unique="false" type="BTREE">
+            <column key="remains" length="" collation="A" null="false"/>
         </index>
 
         <aggregate alias="Store" class="slStore" local="store_id" foreign="id" cardinality="one" owner="foreign"/>

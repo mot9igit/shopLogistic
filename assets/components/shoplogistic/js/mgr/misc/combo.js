@@ -77,6 +77,80 @@ shopLogistic.combo.User = function (config) {
 Ext.extend(shopLogistic.combo.User, shopLogistic.combo.ComboBoxDefault);
 Ext.reg('shoplogistic-combo-user', shopLogistic.combo.User);
 
+shopLogistic.combo.Store = function (config) {
+    config = config || {};
+    Ext.applyIf(config, {
+        name: 'store_id',
+        fieldLabel: config.name || 'store_id',
+        hiddenName: config.name || 'store_id',
+        displayField: 'name',
+        valueField: 'id',
+        anchor: '99%',
+        fields: ['id', 'name'],
+        pageSize: 20,
+        typeAhead: false,
+        editable: true,
+        allowBlank: false,
+        url: shopLogistic.config['connector_url'],
+        baseParams: {
+            action: 'mgr/store/getlist',
+            combo: true,
+        },
+        tpl: new Ext.XTemplate(
+            '\
+            <tpl for=".">\
+                <div class="x-combo-list-item">\
+                    <span>\
+                        <small>({id})</small>\
+                        <b>{name}</b>\
+                    </span>\
+                </div>\
+            </tpl>',
+            {compiled: true}
+        ),
+    });
+    shopLogistic.combo.Store.superclass.constructor.call(this, config);
+};
+Ext.extend(shopLogistic.combo.Store, shopLogistic.combo.ComboBoxDefault);
+Ext.reg('shoplogistic-combo-store', shopLogistic.combo.Store);
+
+shopLogistic.combo.Warehouse = function (config) {
+    config = config || {};
+    Ext.applyIf(config, {
+        name: 'warehouse_id',
+        fieldLabel: config.name || 'warehouse_id',
+        hiddenName: config.name || 'warehouse_id',
+        displayField: 'name',
+        valueField: 'id',
+        anchor: '99%',
+        fields: ['id', 'name'],
+        pageSize: 20,
+        typeAhead: false,
+        editable: true,
+        allowBlank: false,
+        url: shopLogistic.config['connector_url'],
+        baseParams: {
+            action: 'mgr/warehouse/getlist',
+            combo: true,
+        },
+        tpl: new Ext.XTemplate(
+            '\
+            <tpl for=".">\
+                <div class="x-combo-list-item">\
+                    <span>\
+                        <small>({id})</small>\
+                        <b>{name}</b>\
+                    </span>\
+                </div>\
+            </tpl>',
+            {compiled: true}
+        ),
+    });
+    shopLogistic.combo.Warehouse.superclass.constructor.call(this, config);
+};
+Ext.extend(shopLogistic.combo.Warehouse, shopLogistic.combo.ComboBoxDefault);
+Ext.reg('shoplogistic-combo-warehouse', shopLogistic.combo.Warehouse);
+
 shopLogistic.combo.Search = function (config) {
     config = config || {};
     Ext.applyIf(config, {

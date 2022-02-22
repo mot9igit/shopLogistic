@@ -118,3 +118,18 @@ $_lang['shoplogistic_grid_actions'] = 'Действия';
 
 $_lang['shoplogistic_save'] = 'Сохранить';
 $_lang['shoplogistic_cancel'] = 'Отмена';
+$_lang['shoplogistic_add'] = 'Добавить';
+$_lang['shoplogistic_confirm'] = 'Вы уверены?';
+$_lang['shoplogistic_remove'] = 'В удалении объекта.';
+
+$_lang["shoplogistic_resource_tab_store"] = "Остатки по магазинам";
+$_lang["shoplogistic_resource_tab_store_desc"] = "Остатки по магазинам доступны для розницы. Их можно вбить здесь вручную или использовать ЛК.";
+$_lang["shoplogistic_resource_tab_warehouse"] = "Остатки по складам";
+$_lang["shoplogistic_resource_tab_warehouse_desc"] = "Остатки по складам доступны для опта. Их можно вбить здесь вручную или использовать ЛК.";
+
+$_lang["shoplogistic_remains_store_id"] = "Магазин";
+$_lang["shoplogistic_remains_remains"] = "Остаток";
+$_lang["shoplogistic_warehouse_warehouse_id"] = "Склад";
+$_lang["shoplogistic_warehouse_remains"] = "Остаток";
+$_lang["shoplogistic_resource_store_id_ae"] = "Остаток по данному товару уже есть в магазине. Воспользуйтесь поиском.";
+$_lang["shoplogistic_resource_warehouse_id_ae"] = "Остаток по данному товару уже есть на складе. Воспользуйтесь поиском.";
