@@ -1,12 +1,16 @@
 <?php
 
 return [
-    'tpl.shopLogistic.item' => [
-        'file' => 'item',
-        'description' => '',
+    'tpl.shoplogistic.ms2_cart_blank' => [
+        'file' => 'ms2_cart_blank',
+        'description' => 'Уведомление, что корзина пуста',
     ],
-    'tpl.shopLogistic.office' => [
-        'file' => 'office',
-        'description' => '',
+    'tpl.shoplogistic.ms2_cart' => [
+        'file' => 'ms2_cart',
+        'description' => 'Чанк корзины',
     ],
+	'tpl.shoplogistic.ms2_order' => [
+		'file' => 'ms2_order',
+		'description' => 'Чанк оформления заказа',
+	],
 ];
