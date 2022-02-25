@@ -9,7 +9,9 @@ var sl_delivery = {
 }
 
 $(document).ready(function(){
-    sl_delivery.initialize();
+    if($(sl_delivery.options.wrapper).length){
+        sl_delivery.initialize();
+    }
     // QUANTITY
     $('.sl-quantity button.btn-count').click(function(e){
         e.preventDefault();

@@ -1,7 +1,81 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
-
+@import url(../libs/owlcarousel2/dist/assets/owl.carousel.min.css);
 body {
     font-family: "Roboto", sans-serif;
+}
+
+*,
+*:after,
+*:before {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+*,
+*::after,
+*::before {
+    -webkit-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+ul[class],
+ol[class] {
+    padding: 0;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+figure,
+figcaption,
+blockquote,
+dl,
+dd {
+    margin: 0;
+}
+
+ul[class] {
+    list-style: none;
+}
+
+img {
+    width: auto;
+    max-width: 100%;
+    height: auto !important;
+}
+
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+
+a {
+    text-decoration: none;
+}
+
+html,
+body {
+    height: 100%;
+    background: #f4f7f9;
+    -webkit-font-smoothing: antialiased;
+    font-smoothing: antialiased;
 }
 
 .sl_container {
@@ -946,6 +1020,20 @@ a:hover {
     display: flex;
     position: relative;
     z-index: 1;
+}
+
+.sl-alert {
+    position: relative;
+    padding: 1rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+
+.sl-alert-info {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
 }
 
 /* ------------ CART PAGE ----------- */

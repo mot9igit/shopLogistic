@@ -21,4 +21,19 @@ return [
 		'value' => 1,
 		'area' => 'shoplogistic_eshoplogistic',
 	],
+	'curier_delivery' => [
+		'xtype' => 'textfield',
+		'value' => 1,
+		'area' => 'shoplogistic_eshoplogistic',
+	],
+	'punkt_delivery' => [
+		'xtype' => 'textfield',
+		'value' => 1,
+		'area' => 'shoplogistic_eshoplogistic',
+	],
+	'post_delivery' => [
+		'xtype' => 'textfield',
+		'value' => 1,
+		'area' => 'shoplogistic_eshoplogistic',
+	]
 ];

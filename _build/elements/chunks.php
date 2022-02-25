@@ -13,4 +13,8 @@ return [
 		'file' => 'ms2_order',
 		'description' => 'Чанк оформления заказа',
 	],
+	'tpl.shoplogistic.mspc_promocode' => [
+		'file' => 'mspc_promocode',
+		'description' => 'Чанк для промокода',
+	],
 ];

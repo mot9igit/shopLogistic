@@ -35,4 +35,9 @@ return [
             ],
         ],
     ],
+	'sl.ms_getfields' => [
+		'file' => 'ms_getfields',
+		'description' => 'Autocomplete offer fields',
+		'properties' => [],
+	],
 ];

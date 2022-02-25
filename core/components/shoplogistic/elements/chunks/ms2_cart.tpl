@@ -2,13 +2,13 @@
     <div class="alert alert-info">{'ms2_cart_is_empty' | lexicon}</div>
 {else}
     <div class="msCart">
-        <div class="row">
-            <div class="col-6">
+        <div class="sl-row">
+            <div class="d-col-6">
                 <h1>Корзина</h1>
             </div>
-            <div class="col-6 text-right">
+            <div class="d-col-6 text-right">
                 <form method="post" class="ms2_form">
-                    <button type="submit" name="ms2_action" value="cart/clean" class="btn btn-text">
+                    <button type="submit" name="ms2_action" value="cart/clean" class="sl-btn sl-btn-text">
                         Очистить корзину
                     </button>
                 </form>
@@ -21,14 +21,14 @@
                     <div class="deleter">
                         <form method="post" class="ms2_form">
                             <input type="hidden" name="key" value="{$product.key}">
-                            <button class="btn btn--cart" type="submit" name="ms2_action"
+                            <button class="sl-btn sl-btn-text" type="submit" name="ms2_action"
                                     value="cart/remove" title="Удалить"><i class="fa fa-trash"
                                                                            aria-hidden="true"></i>
                             </button>
                         </form>
                     </div>
-                    <div class="row align-items-center">
-                        <div class="col-6 col-md-2">
+                    <div class="sl-row sl-align-items-center">
+                        <div class="d-col-6 d-col-md-2">
                             <div class="image">
                                 <a href="{$product.id | url}">
                                     {if $product.image}
@@ -39,7 +39,7 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="col-6 col-md-5">
+                        <div class="d-col-6 d-col-md-5">
                             {if $product.article}
                                 <span class="article">{$product.article}</span>
                             {/if}
@@ -60,20 +60,20 @@
                                 {/foreach}
                             {/if}
                         </div>
-                        <div class="col-6 col-md-3">
+                        <div class="d-col-6 d-col-md-3">
                             <form method="post" class="ms2_form form-inline" role="form">
                                 <input type="hidden" name="key" value="{$product.key}">
-                                <div class="cb-qnt le-quantity inliner vam">
-                                    <button type="button" class="btn btn--count minus">-</button>
+                                <div class="cb-qnt sl-quantity">
+                                    <button type="button" class="btn-count minus">-</button>
                                     <input type="text" name="count" class="counter" value="{$product.count}" data-krat="{$resource.parent | resource : "krat"}" data-min="{$resource.parent | resource : "min"}">
-                                    <button type="button" class="btn btn--count plus">+</button>
+                                    <button type="button" class="btn-count plus">+</button>
                                 </div>
-                                <button class="btn btn--cart" type="submit" name="ms2_action"
+                                <button type="submit" name="ms2_action"
                                         value="cart/change"><i class="fa fa-refresh"
                                                                aria-hidden="true"></i></button>
                             </form>
                         </div>
-                        <div class="col-6 col-md-2">
+                        <div class="d-col-6 d-col-md-2">
                             <span class="price"><span>{$product.price}</span> {'autos.shop.currency' | lexicon}</span>
                         </div>
                     </div>
