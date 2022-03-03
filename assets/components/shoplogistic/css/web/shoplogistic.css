@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
-@import url(../libs/owlcarousel2/dist/assets/owl.carousel.min.css);
 body {
     font-family: "Roboto", sans-serif;
 }
@@ -56,7 +55,7 @@ ul[class] {
 img {
     width: auto;
     max-width: 100%;
-    height: auto !important;
+    height: auto;
 }
 
 input,
@@ -102,14 +101,6 @@ body {
     flex: 0 0 auto;
 }
 
-a {
-    text-decoration: underline;
-}
-
-a:hover {
-    text-decoration: none;
-}
-
 .fa-phone:before {
     display: inline-block;
     -ms-transform: rotate(90deg);
@@ -141,6 +132,14 @@ a:hover {
 
 .text-right {
     text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
 }
 
 /* ----------------- LAYOUT ------------- */
@@ -872,6 +871,13 @@ a:hover {
     margin-bottom: 15px;
 }
 
+.form_input_group.input_pl .desc{
+    display: inline-block;
+    font-size: 14px;
+    margin-top: 3px;
+    color: #A8A8A8;
+}
+
 .form_input_group.input_pl ~ .form_input_group:not(.input_pl) {
     margin-top: 64px;
 }
@@ -1039,6 +1045,12 @@ a:hover {
 /* ------------ CART PAGE ----------- */
 .cart_wrap {
     position: relative;
+}
+
+.cart_wrap span.title{
+    display: block;
+    font-size: 22px;
+    font-weight: bold;
 }
 
 .cart_wrap .summary_block {
@@ -1240,6 +1252,7 @@ a:hover {
     border: 0;
     background: #fff;
     color: #171717;
+    cursor: pointer;
     -webkit-transition: all .2s ease;
     -o-transition: all .2s ease;
     transition: all .2s ease;
@@ -1348,10 +1361,21 @@ a:hover {
     border-color: #274684;
 }
 
+.order_form .form_block .form_block_content .checkbox input[disabled] + .visual_block {
+    opacity: .7;
+    cursor: not-allowed;
+    pointer-events: all !important;
+}
+
 .order_form .form_block .form_block_content .checkbox label {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
+    position: relative;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
 }
 
 .order_form .form_block .form_block_content .checkbox .visual_block {
@@ -1388,6 +1412,100 @@ a:hover {
     margin-top: 4px;
     color: #75787b;
     font-size: 14px;
+}
+
+.order_form .form_block .form_block_content .checkbox .visual_block .visual_block_inner-text{
+    display: none;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.suggestions-wrapper a[target="_blank"]{
+    display: none;
+}
+
+.service-map{
+    display: none;
+}
+
+.service-map.active{
+    display: block;
+}
+
+#service-map{
+    height: 300px;
+    width: 100%;
+}
+
+.sl-services{
+    display: none;
+}
+
+.sl-services.active{
+    display: block;
+}
+
+.service-map .choosed_data{
+    margin-top: 10px;
+    border: 1px dashed #333;
+    padding: 5px 15px;
+    fint-size: 14px;
+}
+
+.choosed_data{
+    display: none;
+}
+
+.choosed_data.active{
+    display: block;
+}
+
+.sl_baloon_header img{
+    max-width: 20px;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.sl_baloon_header{
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.sl_baloon_block{
+    margin-top: 10px;
+}
+
+.sl_baloon_submit button{
+    background: #c4d600;
+    color: #fff;
+    border-radius: 5px;
+    padding: 0.8em 1em;
+    font-size: 1.1em;
+    margin: 0.5em 0;
+    border: none;
+    cursor: pointer;
+}
+
+.sl_order_num{
+    font-size: 30px;
+    font-weight: bold;
+    display: inline-block;
+    padding: 10px 15px;
+    background: #c4d600;
+    color: #ffffff;
+    border: 1px solid #c4d600;
+    border-radius: 5px;
+    margin: 30px 0;
+}
+
+.sl_get_order{
+    position: relative;
+}
+
+.sl_get_order h2{
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 @media (max-width: 991px) {

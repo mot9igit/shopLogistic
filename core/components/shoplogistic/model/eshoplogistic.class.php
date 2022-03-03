@@ -33,6 +33,14 @@ class eShopLogistic
 		], $config);
 	}
 
+	public function init(){
+		if (!$sl_data = $this->modx->cacheManager->get('shoplogistic')) {
+			$sl_data = $this->query('site');
+			$this->modx->cacheManager->set('shoplogistic', $sl_data, 3600*24);
+		}
+		return $sl_data;
+	}
+
 	public function query($method='init', $data=[])
 	{
 		$apiKey = $this->config['api_key'];
@@ -49,7 +57,55 @@ class eShopLogistic
 		curl_setopt($curl, CURLOPT_POSTFIELDS, array_merge($data,['key' => $apiKey]));
 		$result = curl_exec($curl);
 		curl_close($curl);
-		//$this->modx->log(1, print_r($result, 1));
+		$this->modx->log(1, print_r($result, 1));
 		return json_decode($result,1);
+	}
+
+	public function add_toorder($data=[]){
+		if($data['data']){
+			if ($this->ms2Init()) {
+				//$this->modx->log(1, print_r($data, 1));
+				$dirty_data = json_decode($data['data'], 1);
+
+				//$this->modx->log(1, print_r($dirty_data, 1));
+				$method = $dirty_data['service']['method'];
+				$service = $dirty_data['service']['main_key'];
+				$save_data = [
+					'price' => $dirty_data['service'][$service]['price'][$method]['price'],
+					'time' => $dirty_data['service'][$service]['price'][$method]['time'],
+					'service' => $dirty_data['service'][$service]['name'],
+				];
+				$save_data['mode'] = $this->modx->lexicon('shoplogistic_frontend_mode_' . $method);
+				if($method == 'terminal'){
+					$save_data['address'] = $dirty_data['pvz']['code'] . ' || ' . $dirty_data['pvz']['address'];
+				}
+				if($method == 'door' || $service == 'postrf'){
+					$save_data['address'] = $this->modx->lexicon('shoplogistic_frontend_no_address');
+				}
+				//$this->modx->log(1, print_r($save_data, 1));
+				//$this->modx->log(1, json_encode($save_data, JSON_UNESCAPED_UNICODE));
+				$this->ms2->order->remove('sl_data');
+				$response = $this->ms2->order->add('sl_data', json_encode($save_data, JSON_UNESCAPED_UNICODE));
+				//$this->modx->log(1, json_encode($response, JSON_UNESCAPED_UNICODE));
+				return array(
+					"success" => true,
+					"data" => array(
+						"re_calc" => 1
+					)
+				);
+			}
+		}
+	}
+
+	private function ms2Init(){
+		if(is_dir($this->modx->getOption('core_path').'components/minishop2/model/minishop2/')) {
+			$this->ms2 = $this->modx->getService('miniShop2');
+			if ($this->ms2 instanceof miniShop2) {
+				$context = $this->modx->context->key ? $this->modx->context->key : 'web';
+				$this->ms2->initialize($context, ['json_response' => true]);
+				return true;
+			}
+		}
+		return false;
 	}
 }

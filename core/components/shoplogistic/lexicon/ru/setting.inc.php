@@ -10,6 +10,10 @@ $_lang['setting_shoplogistic_frontend_js_desc'] = 'Можно указать т�
 
 $_lang['setting_shoplogistic_api_key'] = 'Ключ API eShopLogistic';
 $_lang['setting_shoplogistic_api_key_desc'] = '<a href="https://eshoplogistic.ru" target="_blank">eshoplogistic.ru</a>';
+$_lang['setting_shoplogistic_api_key_dadata'] = 'Ключ API DaData';
+$_lang['setting_shoplogistic_api_key_dadata_desc'] = '<a href="https://dadata.ru/" target="_blank">dadata.ru</a>';
+$_lang['setting_shoplogistic_secret_key_dadata'] = 'Secret key API DaData';
+$_lang['setting_shoplogistic_secret_key_dadata_desc'] = '<a href="https://dadata.ru/" target="_blank">dadata.ru</a>';
 $_lang['setting_shoplogistic_default_delivery'] = 'Способ доставки по-умолчанию';
 $_lang['setting_shoplogistic_default_delivery_desc'] = 'ID способа доставки MS2, если не получено ни одного результата по другим вариантам.';
 

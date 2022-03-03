@@ -133,3 +133,18 @@ $_lang["shoplogistic_warehouse_warehouse_id"] = "Склад";
 $_lang["shoplogistic_warehouse_remains"] = "Остаток";
 $_lang["shoplogistic_resource_store_id_ae"] = "Остаток по данному товару уже есть в магазине. Воспользуйтесь поиском.";
 $_lang["shoplogistic_resource_warehouse_id_ae"] = "Остаток по данному товару уже есть на складе. Воспользуйтесь поиском.";
+
+$_lang["shoplogistic_choose_address"] = "Выберите подходящий населенный пункт из списка";
+$_lang["shoplogistic_choose_pvz"] = "Выберите подходящий пункт выдачи на карте";
+
+$_lang["shoplogistic_frontend_mode_terminal"] = "Доставка до пункта самовывоза";
+$_lang["shoplogistic_frontend_mode_door"] = "Доставка до двери";
+$_lang["shoplogistic_frontend_no_address"] = "Адрес доставки указан на вкладке 'Адрес'";
+
+$_lang['shoplogistic_order_delivery_tab'] = 'Доставка';
+$_lang['shoplogistic_order_delivery_info'] = 'Данные о доставке, полученные в момент оформления заказа';
+$_lang['shoplogistic_order_delivery_info_price'] = 'Цена';
+$_lang['shoplogistic_order_delivery_info_time'] = 'Срок';
+$_lang['shoplogistic_order_delivery_info_service'] = 'Служба';
+$_lang['shoplogistic_order_delivery_info_mode'] = 'Способ';
+$_lang['shoplogistic_order_delivery_info_pvz'] = 'Пункт самовывоза';

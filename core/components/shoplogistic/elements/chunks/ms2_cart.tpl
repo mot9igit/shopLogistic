@@ -1,10 +1,10 @@
 {if !count($products)}
     <div class="alert alert-info">{'ms2_cart_is_empty' | lexicon}</div>
 {else}
-    <div class="msCart">
+    <div class="msCart" id="msCart">
         <div class="sl-row">
             <div class="d-col-6">
-                <h1>Корзина</h1>
+                <span class="title">Корзина</span>
             </div>
             <div class="d-col-6 text-right">
                 <form method="post" class="ms2_form">
@@ -65,7 +65,7 @@
                                 <input type="hidden" name="key" value="{$product.key}">
                                 <div class="cb-qnt sl-quantity">
                                     <button type="button" class="btn-count minus">-</button>
-                                    <input type="text" name="count" class="counter" value="{$product.count}" data-krat="{$resource.parent | resource : "krat"}" data-min="{$resource.parent | resource : "min"}">
+                                    <input type="text" name="count" class="counter" value="{$product.count}" data-krat="{($resource.parent | resource : "krat")?:1}" data-min="{($resource.parent | resource : "min")?:1}">
                                     <button type="button" class="btn-count plus">+</button>
                                 </div>
                                 <button type="submit" name="ms2_action"
@@ -74,7 +74,7 @@
                             </form>
                         </div>
                         <div class="d-col-6 d-col-md-2">
-                            <span class="price"><span>{$product.price}</span> {'autos.shop.currency' | lexicon}</span>
+                            <span class="price"><span>{$product.price}</span> руб.</span>
                         </div>
                     </div>
                 </div>

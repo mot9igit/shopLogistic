@@ -17,4 +17,12 @@ return [
 		'file' => 'mspc_promocode',
 		'description' => 'Чанк для промокода',
 	],
+	'tpl.shoplogistic.services' => [
+		'file' => 'services',
+		'description' => 'Чанк для вывода сервисов доставки',
+	],
+	'tpl.shoplogistic.ms2_get_order' => [
+		'file' => 'ms2_get_order',
+		'description' => 'Чанк для вывода информации о заказе',
+	],
 ];

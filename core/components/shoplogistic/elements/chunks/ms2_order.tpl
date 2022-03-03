@@ -5,11 +5,11 @@
                 <div class="d-col-lg-8">
                     {$_modx->runSnippet("sl.ms_getfields", [])}
                     {$_modx->runSnippet("!msCart", [
-                        "tpl" => "tpl.shoplogistic.ms2_cart"
+                    "tpl" => "tpl.shoplogistic.ms2_cart"
                     ])}
                     <div class="order_form">
-                        <form class="form-horizontal ms2_form" id="msOrder" method="post">
-                            <div class="form_block_content">
+                        <form class="form-horizontal ms2_form sl_order" id="msOrder" method="post">
+                            <div class="form_block">
                                 <div class="form_block_title inliner vam">
                                     <span class="number">1</span>
                                     <span class="title">Доставка и оплата</span>
@@ -65,7 +65,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form_block_content">
+                            <div class="form_block">
                                 <div class="form_block_title inliner vam">
                                     <span class="number">2</span>
                                     <span class="title">Адрес доставки и получатель</span>
@@ -76,7 +76,7 @@
                                         <div class="sl-row">
                                             {foreach ['receiver','email','phone'] as $key => $field}
                                                 <div class="d-col-12 {if $field != 'receiver'}d-col-md-6{/if}">
-                                                    <div class="form_input_group input-parent">
+                                                    <div class="form_input_group input_pl input-parent">
                                                         <input type="text" id="{$field}" placeholder="{('ms2_frontend_' ~ $field) | lexicon}"
                                                                name="{$field}" value='{$form[$field]?:$_modx->getPlaceholder("address."~$field)}'
                                                                class="base_input{($field in list $errors) ? ' error' : ''}">
@@ -86,32 +86,49 @@
                                             {/foreach}
                                         </div>
                                     </div>
-                                    <div class="sub_block">
+                                    <div class="sub_block sl_del">
                                         <span class="subblock_title">Адрес доставки</span>
-                                        <div class="sl-row">
-                                            {foreach [
-                                            'index' => 'd-col-12 d-col-md-4',
-                                            'region' => 'd-col-12 d-col-md-8',
-                                            'city' => 'd-col-12',
-                                            'street' => 'd-col-12 d-col-md-6',
-                                            'building' => 'd-col-6 d-col-md-3',
-                                            'room' => 'd-col-6 d-col-md-3'] as $field => $val}
-                                                <div class="{$val}">
-                                                    <div class="form_input_group input-parent">
-                                                        <input type="text" id="{$field}" placeholder="{('ms2_frontend_' ~ $field) | lexicon}"
-                                                               name="{$field}" value='{$form[$field]?:$_modx->getPlaceholder("address."~$field)}'
-                                                               class="base_input{($field in list $errors) ? ' error' : ''}">
-                                                        <label for="{$field}" class="s-complex-input__label">{('ms2_frontend_' ~ $field) | lexicon}</label>
-                                                    </div>
+                                        <div class="sl_deliveries">
+                                            <div class="form_input_group input_pl input-parent">
+                                                <input type="text" id="address" placeholder="{('ms2_frontend_address') | lexicon}"
+                                                       name="address" value='{$form['address']?:$_modx->getPlaceholder("address.address")}'
+                                                       class="base_input sl_address">
+                                                <label for="address" class="s-complex-input__label">{('ms2_frontend_address') | lexicon}</label>
+                                                <span class="desc">Выберите подходящий населенный пункт из списка</span>
+                                            </div>
+                                            <div class="sl_address_block" style="display: none;">
+                                                <input type="hidden" name="fias" value=""/>
+                                                <input type="hidden" name="kladr" value=""/>
+                                                <input type="hidden" name="geo" value=""/>
+                                                <input type="hidden" name="delivery_data" class="delivery_data" value=""/>
+                                                <div class="sl-row">
+                                                    {foreach [
+                                                    'index' => 'd-col-12 d-col-md-4',
+                                                    'region' => 'd-col-12 d-col-md-8',
+                                                    'city' => 'd-col-12',
+                                                    'street' => 'd-col-12 d-col-md-6',
+                                                    'building' => 'd-col-6 d-col-md-3',
+                                                    'room' => 'd-col-6 d-col-md-3'] as $field => $val}
+                                                        <div class="{$val}">
+                                                            <div class="form_input_group input_pl input-parent">
+                                                                <input type="text" id="{$field}" placeholder="{('ms2_frontend_' ~ $field) | lexicon}"
+                                                                       name="{$field}" value='{$form[$field]?:$_modx->getPlaceholder("address."~$field)}'
+                                                                       class="base_input{($field in list $errors) ? ' error' : ''}"  {if $field in ['index','region','city']}readonly{/if}>
+                                                                <label for="{$field}" class="s-complex-input__label">{('ms2_frontend_' ~ $field) | lexicon}</label>
+                                                            </div>
+                                                        </div>
+                                                    {/foreach}
                                                 </div>
-                                            {/foreach}
+                                            </div>
                                         </div>
+                                        {$_modx->runSnippet("!sl.services", [
+                                        "tpl" => "tpl.shoplogistic.services"
+                                        ])}
                                     </div>
                                     <div class="sub_block">
                                         <span class="subblock_title">Комментарий</span>
                                         <div class="form_input_group input-parent">
                                             <textarea name="comment" id="comment" class="base_input{('comment' in list $errors) ? ' error' : ''}" placeholder="Комментарий">{$form.comment}</textarea>
-                                            <label for="comment" class="s-complex-input__label">Комментарий</label>
                                         </div>
                                     </div>
                                 </div>
@@ -129,16 +146,20 @@
                         </div>
                         <div class="summary_promocode">
                             {'!mspcForm' | snippet:[
-                                'tpl' => 'tpl.shoplogistic.mspc_promocode'
+                            'tpl' => 'tpl.shoplogistic.mspc_promocode'
                             ]}
                         </div>
                         <ul class="summary-summation">
                             <li>
                                 <div class="summary-summation__term ">Товары</div>
-                                <div class="summary-summation__data "><span class="ms2_total_cost">{$order.cost ?: 0}</span>&thinsp;₽</div>
+                                <div class="summary-summation__data "><span id="ms2_order_cart_cost">{$order.cart_cost ?: 0}</span>&thinsp;₽</div>
                             </li>
                             <li>
-                                <div class="summary-summation__total"><span class="ms2_total_cost">{$order.cost ?: 0}</span>&thinsp;₽</div>
+                                <div class="summary-summation__term ">Доставка <div class="choosed_data">До ПВЗ <span class="sl_pvz"></span></div></div>
+                                <div class="summary-summation__data "><span id="ms2_order_delivery_cost">{$order.delivery_cost ?: 0}</span>&thinsp;₽</div>
+                            </li>
+                            <li>
+                                <div class="summary-summation__total"><span id="ms2_order_cost">{$order.cost ?: 0}</span>&thinsp;₽</div>
                             </li>
                         </ul>
                         <div class="text-center">

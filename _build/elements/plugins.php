@@ -6,6 +6,9 @@ return [
         'description' => 'Base functional plugin',
         'events' => [
             'OnDocFormRender' => [],
+			'OnLoadWebDocument' => [],
+			'msOnManagerCustomCssJs' => [],
+			'msOnCreateOrder' => [],
         ],
     ],
 ];
