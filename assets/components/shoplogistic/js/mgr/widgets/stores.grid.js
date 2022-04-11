@@ -182,7 +182,7 @@ Ext.extend(shopLogistic.grid.Stores, MODx.grid.Grid, {
     },
 
     getFields: function () {
-        return ['id', 'name', 'city', 'description', 'active', 'actions'];
+        return ['id', 'name', 'apikey', 'city', 'description', 'active', 'actions'];
     },
 
     getColumns: function () {
@@ -194,6 +194,11 @@ Ext.extend(shopLogistic.grid.Stores, MODx.grid.Grid, {
         }, {
             header: _('shoplogistic_store_name'),
             dataIndex: 'name',
+            sortable: true,
+            width: 200,
+        }, {
+            header: _('shoplogistic_store_apikey'),
+            dataIndex: 'apikey',
             sortable: true,
             width: 200,
         }, {

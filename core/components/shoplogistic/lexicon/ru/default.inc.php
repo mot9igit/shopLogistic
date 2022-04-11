@@ -8,6 +8,7 @@ $_lang['shoplogistic_intro_msg'] = 'Вы можете выделять сраз�
 $_lang['shoplogistic_stores'] = 'Магазины';
 $_lang['shoplogistic_store_id'] = 'ID';
 $_lang['shoplogistic_store_name'] = 'Название';
+$_lang['shoplogistic_store_apikey'] = 'Ключ API';
 $_lang['shoplogistic_store_website'] = 'Сайт';
 $_lang['shoplogistic_store_city'] = 'Город';
 $_lang['shoplogistic_store_contact'] = 'Контактное лицо';
@@ -62,6 +63,7 @@ $_lang['shoplogistic_store_err_save'] = 'Ошибка при сохранени�
 $_lang['shoplogistic_warehouses'] = 'Склады';
 $_lang['shoplogistic_warehouse_id'] = 'ID';
 $_lang['shoplogistic_warehouse_name'] = 'Название';
+$_lang['shoplogistic_warehouse_apikey'] = 'Ключ API';
 $_lang['shoplogistic_warehouse_website'] = 'Сайт';
 $_lang['shoplogistic_warehouse_city'] = 'Город';
 $_lang['shoplogistic_warehouse_contact'] = 'Контактное лицо';
@@ -129,8 +131,10 @@ $_lang["shoplogistic_resource_tab_warehouse_desc"] = "Остатки по скл
 
 $_lang["shoplogistic_remains_store_id"] = "Магазин";
 $_lang["shoplogistic_remains_remains"] = "Остаток";
+$_lang["shoplogistic_remains_price"] = "Цена";
 $_lang["shoplogistic_warehouse_warehouse_id"] = "Склад";
 $_lang["shoplogistic_warehouse_remains"] = "Остаток";
+$_lang["shoplogistic_warehouse_price"] = "Цена";
 $_lang["shoplogistic_resource_store_id_ae"] = "Остаток по данному товару уже есть в магазине. Воспользуйтесь поиском.";
 $_lang["shoplogistic_resource_warehouse_id_ae"] = "Остаток по данному товару уже есть на складе. Воспользуйтесь поиском.";
 

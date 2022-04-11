@@ -166,7 +166,9 @@ var sl_delivery = {
             $(sl_delivery.options.services).addClass("active");
             $(sl_delivery.options.service).each(function(){
                 var service = $(this).val();
-                sl_delivery.getDeliveryPrice(fias, service);
+                if(service){
+                    sl_delivery.getDeliveryPrice(fias, service);
+                }
             })
         }
     },

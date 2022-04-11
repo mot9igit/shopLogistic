@@ -67,7 +67,7 @@ class eShopLogistic
 				//$this->modx->log(1, print_r($data, 1));
 				$dirty_data = json_decode($data['data'], 1);
 
-				//$this->modx->log(1, print_r($dirty_data, 1));
+				$this->modx->log(1, print_r($dirty_data, 1));
 				$method = $dirty_data['service']['method'];
 				$service = $dirty_data['service']['main_key'];
 				$save_data = [

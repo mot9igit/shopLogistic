@@ -4,6 +4,7 @@
 
     <object class="slStores" table="sl_stores" extends="xPDOSimpleObject">
         <field key="name" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
+        <field key="apikey" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="website" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="description" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
         <field key="city" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
@@ -17,6 +18,9 @@
 
         <index alias="name" name="name" primary="false" unique="false" type="BTREE">
             <column key="name" length="" collation="A" null="false"/>
+        </index>
+        <index alias="apikey" name="apikey" primary="false" unique="false" type="BTREE">
+            <column key="apikey" length="" collation="A" null="false"/>
         </index>
         <index alias="active" name="active" primary="false" unique="false" type="BTREE">
             <column key="active" length="" collation="A" null="false"/>
@@ -25,6 +29,7 @@
 
     <object class="slWarehouse" table="sl_warehouses" extends="xPDOSimpleObject">
         <field key="name" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
+        <field key="apikey" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="website" dbtype="varchar" precision="255" phptype="string" null="false" default=""/>
         <field key="description" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
         <field key="city" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
@@ -38,6 +43,9 @@
 
         <index alias="name" name="name" primary="false" unique="false" type="BTREE">
             <column key="name" length="" collation="A" null="false"/>
+        </index>
+        <index alias="apikey" name="apikey" primary="false" unique="false" type="BTREE">
+            <column key="apikey" length="" collation="A" null="false"/>
         </index>
         <index alias="active" name="active" primary="false" unique="false" type="BTREE">
             <column key="active" length="" collation="A" null="false"/>
@@ -84,6 +92,7 @@
         <field key="product_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="0"/>
         <field key="warehouse_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="0"/>
         <field key="remains" dbtype="int" attributes="unsigned" phptype="integer" null="true" default="0"/>
+        <field key="price" dbtype="decimal" precision="12,2" phptype="float" null="true" default="0"/>
         <field key="description" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
         <field key="properties" dbtype="text" phptype="json" null="true"/>
 
@@ -92,6 +101,9 @@
         </index>
         <index alias="warehouse_id" name="warehouse_id" primary="false" unique="false" type="BTREE">
             <column key="warehouse_id" length="" collation="A" null="false"/>
+        </index>
+        <index alias="price" name="price" primary="false" unique="false" type="BTREE">
+            <column key="price" length="" collation="A" null="false"/>
         </index>
         <index alias="remains" name="remains" primary="false" unique="false" type="BTREE">
             <column key="remains" length="" collation="A" null="false"/>
@@ -105,11 +117,15 @@
         <field key="product_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="0"/>
         <field key="store_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="0"/>
         <field key="remains" dbtype="int" attributes="unsigned" phptype="integer" null="true" default="0"/>
+        <field key="price" dbtype="decimal" precision="12,2" phptype="float" null="true" default="0"/>
         <field key="description" dbtype="varchar" precision="255" phptype="string" null="true" default=""/>
         <field key="properties" dbtype="text" phptype="json" null="true"/>
 
         <index alias="product_id" name="product_id" primary="false" unique="false" type="BTREE">
             <column key="product_id" length="" collation="A" null="false"/>
+        </index>
+        <index alias="price" name="price" primary="false" unique="false" type="BTREE">
+            <column key="price" length="" collation="A" null="false"/>
         </index>
         <index alias="store_id" name="store_id" primary="false" unique="false" type="BTREE">
             <column key="store_id" length="" collation="A" null="false"/>

@@ -1,5 +1,10 @@
 Changelog for shopLogistic.
 
+0.0.2-pl
+==============
+- Add coloumn price to remains table
+- Add coloumn apikey to stores and warehouses tables
+
 0.0.1-pl
 ==============
 - Initial release

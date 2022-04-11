@@ -25,6 +25,12 @@ shopLogistic.window.CreateSLResourceStore = function (config) {
             fieldLabel: _('shoplogistic_remains_remains'),
             anchor: '99%',
             default: 0
+        },{
+            xtype: 'numberfield',
+            name: 'price',
+            fieldLabel: _('shoplogistic_remains_price'),
+            anchor: '99%',
+            default: 0
         }]
     });
     shopLogistic.window.CreateSLResourceStore.superclass.constructor.call(this, config);
@@ -67,6 +73,12 @@ Ext.extend(shopLogistic.window.UpdateSLResourceStore, MODx.Window, {
             fieldLabel: _('shoplogistic_remains_remains'),
             anchor: '99%',
             default: 0
+        },{
+            xtype: 'numberfield',
+            name: 'price',
+            fieldLabel: _('shoplogistic_remains_price'),
+            anchor: '99%',
+            default: 0
         }];
     },
 
@@ -101,6 +113,12 @@ shopLogistic.window.CreateSLResourceWarehouse = function (config) {
             xtype: 'numberfield',
             name: 'remains',
             fieldLabel: _('shoplogistic_warehouse_remains'),
+            anchor: '99%',
+            default: 0
+        },{
+            xtype: 'numberfield',
+            name: 'price',
+            fieldLabel: _('shoplogistic_remains_price'),
             anchor: '99%',
             default: 0
         }]
@@ -143,6 +161,12 @@ Ext.extend(shopLogistic.window.UpdateSLResourceWarehouse, MODx.Window, {
             xtype: 'numberfield',
             name: 'remains',
             fieldLabel: _('shoplogistic_warehouse_remains'),
+            anchor: '99%',
+            default: 0
+        },{
+            xtype: 'numberfield',
+            name: 'price',
+            fieldLabel: _('shoplogistic_remains_price'),
             anchor: '99%',
             default: 0
         }];

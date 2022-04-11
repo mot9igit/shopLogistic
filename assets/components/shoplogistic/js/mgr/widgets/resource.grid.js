@@ -48,11 +48,12 @@ Ext.extend(shopLogistic.grid.ResourceStores, MODx.grid.Grid, {
             {dataIndex: 'id', sortable: false, width: 70, header: 'ID', hidden: true},
             {dataIndex: 'store', sortable: false, width: 250, header: _('shoplogistic_remains_store_id')},
             {dataIndex: 'remains', sortable: false, width: 220, header: _('shoplogistic_remains_remains')},
+            {dataIndex: 'price', sortable: false, width: 220, header: _('shoplogistic_remains_price')},
             {dataIndex: 'actions', width: 100, header: _('actions'), renderer: shopLogistic.utils.renderActions, sortable: false, id: 'actions'}
         ]
     },
     getFields: function () {
-        return ['id','store_id','remains', 'store','actions'];
+        return ['id','store_id','remains', 'price','store','actions'];
     },
     getTbar: function (config) {
         return [{
@@ -251,11 +252,12 @@ Ext.extend(shopLogistic.grid.ResourceWarehouse, MODx.grid.Grid, {
             {dataIndex: 'id', sortable: false, width: 70, header: 'ID', hidden: true},
             {dataIndex: 'warehouse', sortable: false, width: 250, header: _('shoplogistic_warehouse_warehouse_id')},
             {dataIndex: 'remains', sortable: false, width: 220, header: _('shoplogistic_warehouse_remains')},
+            {dataIndex: 'price', sortable: false, width: 220, header: _('shoplogistic_remains_price')},
             {dataIndex: 'actions', width: 100, header: _('actions'), renderer: shopLogistic.utils.renderActions, sortable: false, id: 'actions'}
         ]
     },
     getFields: function () {
-        return ['id','warehouse_id','remains', 'warehouse','actions'];
+        return ['id','warehouse_id','remains', 'price','warehouse','actions'];
     },
     getTbar: function (config) {
         return [{

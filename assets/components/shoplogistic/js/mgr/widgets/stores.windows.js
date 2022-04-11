@@ -26,6 +26,13 @@ Ext.extend(shopLogistic.window.CreateStore, shopLogistic.window.Default, {
             anchor: '99%',
             allowBlank: false,
         }, {
+            xtype: 'textfield',
+            fieldLabel: _('shoplogistic_store_apikey'),
+            name: 'apikey',
+            id: config.id + '-apikey',
+            anchor: '99%',
+            allowBlank: false,
+        }, {
             xtype: 'xcheckbox',
             boxLabel: _('shoplogistic_store_active'),
             name: 'active',

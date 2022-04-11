@@ -197,6 +197,11 @@ Ext.extend(shopLogistic.grid.Warehouse, MODx.grid.Grid, {
             sortable: true,
             width: 200,
         }, {
+            header: _('shoplogistic_warehouse_apikey'),
+            dataIndex: 'apikey',
+            sortable: true,
+            width: 200,
+        }, {
             header: _('shoplogistic_warehouse_city'),
             dataIndex: 'city',
             sortable: true,
