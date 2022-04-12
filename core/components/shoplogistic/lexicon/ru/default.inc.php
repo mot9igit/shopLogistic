@@ -152,3 +152,7 @@ $_lang['shoplogistic_order_delivery_info_time'] = 'Срок';
 $_lang['shoplogistic_order_delivery_info_service'] = 'Служба';
 $_lang['shoplogistic_order_delivery_info_mode'] = 'Способ';
 $_lang['shoplogistic_order_delivery_info_pvz'] = 'Пункт самовывоза';
+
+$_lang['shoplogistic_apikey_placeholder'] = 'Можно сгенерировать инструментом выше';
+$_lang['shoplogistic_apikey_gen'] = 'Маска для генерации';
+$_lang['shoplogistic_apikey_gen_btn'] = '<i class="icon icon-magic"></i> Генерировать';

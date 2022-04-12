@@ -1,5 +1,9 @@
 Changelog for shopLogistic.
 
+0.0.3-pl
+==============
+- Add API KEY generate tool
+
 0.0.2-pl
 ==============
 - Add coloumn price to remains table

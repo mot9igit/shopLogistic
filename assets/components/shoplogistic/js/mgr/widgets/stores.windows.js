@@ -1,3 +1,12 @@
+Ext.namespace('shopLogistic.functions');
+
+shopLogistic.functions.codeGen = function (codeGenCmp, codeCmp) {
+    var value = codeGenCmp.getValue();
+    var newCode = shopLogistic.utils.genRegExpString(value);
+
+    codeCmp.setValue(newCode);
+}
+
 shopLogistic.window.CreateStore = function (config) {
     config = config || {};
 
@@ -25,9 +34,50 @@ Ext.extend(shopLogistic.window.CreateStore, shopLogistic.window.Default, {
             id: config.id + '-name',
             anchor: '99%',
             allowBlank: false,
-        }, {
+        },{
+            layout: 'column',
+            style: {marginTop: '10px', marginRight: '5px', background: '#eeeeee', padding: '10px 10px'},
+            items: [{
+                columnWidth: .75,
+                layout: 'form',
+                style: {marginTop: '-10px', marginRight: '5px'},
+                items: [{
+                    xtype: 'textfield',
+                    name: 'apikey_gen',
+                    id: config.id + '-apikey-gen',
+                    hideLabel: true,
+                    anchor: '100%',
+                    originalValue: shopLogistic.config['regexp_gen_code'],
+                    //allowBlank: false,
+                }]
+            }, {
+                columnWidth: .25,
+                layout: 'form',
+                style: {marginTop: '0', marginLeft: '5px'},
+                items: [{
+                    xtype: 'button',
+                    id: config.id + '-apikey-gen-btn',
+                    hideLabel: true,
+                    text: _('shoplogistic_apikey_gen_btn'),
+                    cls: 'sl-btn-primary3',
+                    anchor: '100%',
+                    style: 'padding:5px 5px 7px;',
+                    listeners: {
+                        click: {
+                            fn: function () {
+                                var codeGenCmp = Ext.getCmp(config.id + '-apikey-gen');
+                                var codeCmp = Ext.getCmp(config.id + '-apikey');
+                                shopLogistic.functions.codeGen(codeGenCmp, codeCmp)
+                            },
+                            scope: this
+                        }
+                    }
+                }],
+            }
+        ]},{
             xtype: 'textfield',
             fieldLabel: _('shoplogistic_store_apikey'),
+            emptyText: _('shoplogistic_apikey_placeholder'),
             name: 'apikey',
             id: config.id + '-apikey',
             anchor: '99%',

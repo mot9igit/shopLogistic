@@ -21,7 +21,7 @@ class shopLogistic
             'corePath' => $corePath,
             'modelPath' => $corePath . 'model/',
             'processorsPath' => $corePath . 'processors/',
-			'version' => '0.0.1',
+			'version' => '0.0.3',
 
             'connectorUrl' => $assetsUrl . 'connector.php',
             'actionUrl' => $assetsUrl . 'action.php',
@@ -29,6 +29,8 @@ class shopLogistic
 			'assetsPath' => $assetsPath,
             'cssUrl' => $assetsUrl . 'css/',
             'jsUrl' => $assetsUrl . 'js/',
+
+			'regexp_gen_code' => $this->modx->getOption('shoplogistic_regexp_gen_code')
         ], $config);
 
 

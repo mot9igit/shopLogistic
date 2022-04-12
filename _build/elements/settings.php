@@ -45,5 +45,10 @@ return [
 		'xtype' => 'textfield',
 		'value' => 1,
 		'area' => 'shoplogistic_eshoplogistic',
+	],
+	'regexp_gen_code' => [
+		'xtype' => 'textfield',
+		'value' => 'sl-/([a-zA-Z0-9]{4-10})/',
+		'area' => 'shoplogistic_main',
 	]
 ];
