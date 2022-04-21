@@ -199,3 +199,25 @@ Ext.extend(shopLogistic.combo.Search, Ext.form.TwinTriggerField, {
 });
 Ext.reg('shoplogistic-combo-search', shopLogistic.combo.Search);
 Ext.reg('shoplogistic-field-search', shopLogistic.combo.Search);
+
+shopLogistic.combo.company_type = function(config) {
+    config = config || {};
+    Ext.applyIf(config,{
+        store: new Ext.data.ArrayStore({
+            id: 0
+            ,fields: ['company_type','display']
+            ,data: [
+                ['ИП','ИП']
+                ,['ООО','ООО']
+                ,['ОАО','ОАО']
+                ,['ЗАО','ЗАО']
+            ]
+        })
+        ,mode: 'local'
+        ,displayField: 'display'
+        ,valueField: 'company_type'
+    });
+    shopLogistic.combo.company_type.superclass.constructor.call(this,config);
+};
+Ext.extend(shopLogistic.combo.company_type,MODx.combo.ComboBox);
+Ext.reg('combo-company_type',shopLogistic.combo.company_type);

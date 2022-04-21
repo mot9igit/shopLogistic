@@ -1,5 +1,17 @@
 Changelog for shopLogistic.
 
+0.0.5-pl
+==============
+- Add more fields to SlStores & slWarehouse
+- Add sl.profile-products snippet
+- Add more system settings
+- Change utils JS
+
+0.0.4-pl
+==============
+- Add API KEY generate frontend
+- Add sl.profile snippet
+
 0.0.3-pl
 ==============
 - Add API KEY generate tool

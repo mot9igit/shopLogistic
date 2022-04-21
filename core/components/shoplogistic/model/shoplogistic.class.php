@@ -2,45 +2,45 @@
 
 class shopLogistic
 {
-    /** @var modX $modx */
-    public $modx;
+	/** @var modX $modx */
+	public $modx;
 
 
-    /**
-     * @param modX $modx
-     * @param array $config
-     */
-    function __construct(modX &$modx, array $config = [])
-    {
+	/**
+	 * @param modX $modx
+	 * @param array $config
+	 */
+	function __construct(modX &$modx, array $config = [])
+	{
 		$this->modx =& $modx;
 		$corePath = $this->modx->getOption('shoplogistic_core_path', $config, $this->modx->getOption('core_path') . 'components/shoplogistic/');
 		$assetsUrl = $this->modx->getOption('shoplogistic_assets_url', $config, $this->modx->getOption('assets_url') . 'components/shoplogistic/');
 		$assetsPath = $this->modx->getOption('shoplogistic_assets_path', $config, $this->modx->getOption('base_path') . 'assets/components/shoplogistic/');
 
-        $this->config = array_merge([
-            'corePath' => $corePath,
-            'modelPath' => $corePath . 'model/',
-            'processorsPath' => $corePath . 'processors/',
-			'version' => '0.0.3',
+		$this->config = array_merge([
+			'corePath' => $corePath,
+			'modelPath' => $corePath . 'model/',
+			'processorsPath' => $corePath . 'processors/',
+			'version' => '0.0.4',
 
-            'connectorUrl' => $assetsUrl . 'connector.php',
-            'actionUrl' => $assetsUrl . 'action.php',
-            'assetsUrl' => $assetsUrl,
+			'connectorUrl' => $assetsUrl . 'connector.php',
+			'actionUrl' => $assetsUrl . 'action.php',
+			'assetsUrl' => $assetsUrl,
 			'assetsPath' => $assetsPath,
-            'cssUrl' => $assetsUrl . 'css/',
-            'jsUrl' => $assetsUrl . 'js/',
+			'cssUrl' => $assetsUrl . 'css/',
+			'jsUrl' => $assetsUrl . 'js/',
 
 			'regexp_gen_code' => $this->modx->getOption('shoplogistic_regexp_gen_code')
-        ], $config);
+		], $config);
 
 
-        $this->modx->addPackage('shoplogistic', $this->config['modelPath']);
-        $this->modx->lexicon->load('shoplogistic:default');
+		$this->modx->addPackage('shoplogistic', $this->config['modelPath']);
+		$this->modx->lexicon->load('shoplogistic:default');
 
 		if ($this->pdoTools = $this->modx->getService('pdoFetch')) {
 			$this->pdoTools->setConfig($this->config);
 		}
-    }
+	}
 
 	/**
 	 * Initializes component into different contexts.
@@ -93,6 +93,8 @@ class shopLogistic
 					'post_delivery' => $this->modx->getOption('shoplogistic_post_delivery'),
 					'punkt_delivery' => $this->modx->getOption('shoplogistic_punkt_delivery'),
 					'curier_delivery' => $this->modx->getOption('shoplogistic_curier_delivery'),
+
+					'regexp_gen_code' => $this->modx->getOption('shoplogistic_regexp_gen_code'),
 
 					'ctx' => $ctx
 				);
@@ -222,8 +224,95 @@ class shopLogistic
 			case 'delivery/add_order':
 				$response = $this->esl->add_toorder($data);
 				break;
+			case 'apikey/generate':
+				$response = $this->apikeyGenerate($data);
+				break;
+			case 'p_filter/set':
+				$response = $this->p_filter($data);
+				break;
 		}
 		return $response;
+	}
+
+	public function p_filter($data){
+		$b_criteria = array(
+			'element' => 'sl.profile-products',
+			'parents' => 0,
+			'limit' => 10,
+			'showZeroPrice' => 1,
+			'type' => $data['type'],
+			'col_id' => $data['col_id'],
+			"tpl" => "@FILE chunks/profile_products.tpl",
+			'tplPage' => '@INLINE <li class="page-item"><a class="page-link" href="{$href}" data-number="{$pageNo}">{$pageNo}</a></li>',
+			'tplPageWrapper' => '@INLINE  <nav><ul class="pagination justify-content-center">{$prev}{$pages}{$next}</ul></nav>',
+			'tplPageActive' => '@INLINE <li class="page-item active"><a class="page-link" href="{$href}" data-number="{$pageNo}">{$pageNo}</a></li>',
+			'tplPagePrev' => '@INLINE <li class="page-item"><a class="page-link" href="{$href}" aria-label="Previous" data-number="{$pageNo}"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>',
+			'tplPageNext' => '@INLINE <li class="page-item"><a class="page-link" href="{$href}" aria-label="Next" data-number="{$pageNo}"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>',
+			'tplPagePrevEmpty' => '@INLINE ',
+			'tplPageNextEmpty' => '@INLINE '
+		);
+		if($data['type'] == 'slStores'){
+			$obj = 'slStoresRemains';
+			$col = "store_id";
+		}else{
+			$obj = 'slWarehouseRemains';
+			$col = "warehouse_id";
+		}
+		if($data['only_remains']){
+			$ids = array();
+			$criteria = array(
+				$col => $data['col_id']
+			);
+			$cols = $this->modx->getCollection($obj, $criteria);
+			foreach($cols as $col){
+				$ids[] = $col->get('product_id');
+			}
+			//$b_criteria['parents'] = 0;
+			//$b_criteria['resources'] = implode(',', $ids);
+			$b_criteria['where'][] = "msProduct.id IN (".implode(',', $ids).')';
+		}
+		if($data['name']){
+			if(count($b_criteria['where'])){
+				$b_criteria['where'][] = array(
+					"pagetitle:LIKE" => '%'.$data['name'].'%',
+					"OR:Data.article:LIKE" => '%'.$data['name'].'%',
+				);
+			}else{
+				$b_criteria['where'] = array(
+					"pagetitle:LIKE" => '%'.$data['name'].'%',
+					"OR:Data.article:LIKE" => '%'.$data['name'].'%',
+				);
+			}
+		}
+		//$this->modx->log(1, print_r($b_criteria, 1));
+		$out = array();
+		//$this->modx->log(1, $data['spage'].'_'.$data['type'].'_'.$data['col_id']);
+		$_SESSION['sl_filters'][$data['spage'].'_'.$data['type'].'_'.$data['col_id']] = $b_criteria['where'];
+		$out['data'] = $this->modx->runSnippet("pdoPage", $b_criteria);
+		$out['pagination'] = $this->modx->getPlaceholder('page.nav');
+		$out['total'] = $this->modx->getPlaceholder('page.total');
+		$out['topdo'] = 1;
+		return $out;
+	}
+
+	public function apikeyGenerate($data){
+		if($data['type'] && $data['id'] && $data['apikey']){
+			$object = $this->modx->getObject($data['type'], $data['id']);
+			if($object){
+				$object->set('apikey', $data['apikey']);
+				$object->save();
+				if($data['type'] == 'slStores'){
+					$data['type'] = 's';
+				}else{
+					$data['type'] = 'w';
+				}
+				return $this->success('', $data);
+			}else{
+				return $this->error('Объект не найден.');
+			}
+		}else{
+			return $this->error('Некорректные данные.');
+		}
 	}
 
 	/**
@@ -294,5 +383,51 @@ class shopLogistic
 		$response = $this->modx->getObject('slWarehouse', ['id' => $warehouse_id]);
 
 		return $response->name;
+	}
+
+	/**
+	 * This method returns an error of the order
+	 *
+	 * @param string $message A lexicon key for error message
+	 * @param array $data .Additional data, for example cart status
+	 * @param array $placeholders Array with placeholders for lexicon entry
+	 *
+	 * @return array|string $response
+	 */
+	public function error($message = '', $data = array(), $placeholders = array())
+	{
+		$response = array(
+			'success' => false,
+			//'message' => $this->modx->lexicon($message, $placeholders),
+			'message' => $message,
+			'data' => $data,
+		);
+
+		return $this->config['json_response']
+			? json_encode($response)
+			: $response;
+	}
+
+
+	/**
+	 * This method returns an success of the order
+	 *
+	 * @param string $message A lexicon key for success message
+	 * @param array $data .Additional data, for example cart status
+	 * @param array $placeholders Array with placeholders for lexicon entry
+	 *
+	 * @return array|string $response
+	 */
+	public function success($message = '', $data = array(), $placeholders = array())
+	{
+		$response = array(
+			'success' => true,
+			'message' => $this->modx->lexicon($message, $placeholders),
+			'data' => $data,
+		);
+
+		return $this->config['json_response']
+			? json_encode($response)
+			: $response;
 	}
 }

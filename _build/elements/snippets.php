@@ -10,5 +10,15 @@ return [
 		'file' => 'services',
 		'description' => 'print services',
 		'properties' => [],
+	],
+	'sl.profile' => [
+		'file' => 'profile',
+		'description' => 'print stores & warehouses',
+		'properties' => [],
+	],
+	'sl.profile-products' => [
+		'file' => 'profile-products',
+		'description' => 'print products',
+		'properties' => [],
 	]
 ];

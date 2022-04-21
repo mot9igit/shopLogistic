@@ -308,10 +308,169 @@ var sl_delivery = {
     }
 }
 
+var sl_marketplace = {
+    options: {
+        wrapper: '.sl_wrap',
+        live_form: '.sl_live_form',
+        generate_api: '.regerate_apikey',
+        profile_product: '.profile-products__item-wrap',
+    },
+    initialize: function () {
+        $(document).on("click", sl_marketplace.options.generate_api, function(e) {
+            e.preventDefault();
+            var type = $(this).data('type');
+            var id = $(this).data('id');
+            var action = 'apikey/generate';
+            var str = shoplogisticConfig['regexp_gen_code'];
+            var gen = sl_marketplace.genRegExpString(str);
+            var data = {
+                sl_action: action,
+                type: type,
+                id: id,
+                apikey: gen
+            };
+            sl_marketplace.send(data);
+        });
+        $(document).on('submit', sl_marketplace.options.live_form, function(e){
+            e.preventDefault();
+            var data = $(this).serialize();
+            sl_marketplace.send(data);
+        });
+        $(sl_marketplace.options.live_form).on('keyup input', 'input[type=text]', function(e){
+            if($(this).val().length >= 3 || $(this).val().length == 0){
+                const url = new URL(document.location);
+                const searchParams = url.searchParams;
+                searchParams.delete("page");
+                window.history.pushState({}, '', url.toString());
+                pdoPage.keys['page'] = 1;
+                $(this).closest(sl_marketplace.options.live_form).trigger('submit');
+            }
+        });
+        $(sl_marketplace.options.live_form).on('change', 'input[type=checkbox]', function(e){
+            const url = new URL(document.location);
+            const searchParams = url.searchParams;
+            searchParams.delete("page");
+            window.history.pushState({}, '', url.toString());
+            pdoPage.keys['page'] = 1;
+            $(this).closest(sl_marketplace.options.live_form).trigger('submit');
+        });
+        $(document).on("click", sl_marketplace.options.profile_product, function(e) {
+            e.preventDefault();
+            var product_id = $(this).closest('.profile-products__item').data('id');
+            var product_name = $(this).closest('.profile-products__item').data('name');
+            var type = $(this).closest('.profile-products__item').data('type');
+            var col_id = $(this).closest('.profile-products__item').data('col_id');
+            var remains = $(this).closest('.profile-products__item').data('remains');
+            var price = $(this).closest('.profile-products__item').data('price');
+            var description = $(this).closest('.profile-products__item').data('description');
+            $('#remain input[name="product_id"]').val(product_id);
+            $('#remain input[name="product_name"]').val(product_name);
+            $('#remain input[name="type"]').val(type);
+            $('#remain input[name="col_id"]').val(col_id);
+            $('#remain input[name="remains"]').val(remains);
+            $('#remain input[name="price"]').val(price);
+            $('#remain textarea[name="description"]').val(description);
+            var remainModal = new bootstrap.Modal(document.getElementById('remain'));
+            remainModal.show();
+        });
+    },
+    genRegExpString: function (str) {
+        var str_new = str;
+
+        var words = {};
+        words['0-9'] = '0123456789';
+        words['a-z'] = 'qwertyuiopasdfghjklzxcvbnm';
+        words['A-Z'] = 'QWERTYUIOPASDFGHJKLZXCVBNM';
+
+        var match = /\/((\(?\[[^\]]+\](\{[0-9-]+\})*?\)?[^\[\(]*?)+)\//.exec(str);
+        if (match != null) {
+            str_new = match[1].replace(/\(?(\[[^\]]+\])(\{[0-9-]+\})\)?/g, regexpReplace1);
+            str_new = str.replace(match[0], str_new);
+        }
+
+        return str_new;
+
+        function rand(min, max) {
+            if (max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+            else {
+                return Math.floor(Math.random() * (min + 1));
+            }
+        }
+
+        function regexpReplace1(match, symbs, count) {
+            symbs = (symbs + count).replace(/\[([0-9a-zA-Z-]+)\]\{([0-9]+-[0-9]+|[0-9]+)\}/g, regexpReplace2);
+
+            return symbs;
+        }
+
+        function regexpReplace2(match, symbs, count) {
+            var r = match;
+            var arr_symbs = symbs.match(/[0-9a-zA-Z]-[0-9a-zA-Z]/g);
+
+            if (arr_symbs.length > 0) {
+                var maxcount = 1;
+
+                if (typeof count != 'undefined') {
+                    nums = count.split('-');
+
+                    if (typeof nums[1] == 'undefined') {
+                        maxcount = +nums[0];
+                    }
+                    else {
+                        min = +nums[0];
+                        max = +nums[1];
+
+                        maxcount = rand(min, max);
+                        maxcount = maxcount < min ? min : maxcount;
+                    }
+                }
+
+                for (var i = 0; i < arr_symbs.length; i++) {
+                    symbs = symbs.replace(arr_symbs[i], words[arr_symbs[i]]);
+                }
+
+                var maxpos = symbs.length - 1,
+                    pos,
+                    r = '';
+
+                for (var i = 0; i < maxcount; i++) {
+                    pos = Math.floor(Math.random() * maxpos);
+                    r += symbs[pos];
+                }
+            }
+
+            return r;
+        }
+    },
+    send: function(data){
+        var response = '';
+        $.ajax({
+            type: "POST",
+            url: shoplogisticConfig['actionUrl'],
+            dataType: 'json',
+            data: data,
+            success:  function(data_r) {
+                if(data_r.data.apikey){
+                    $("#apikey_"+data_r.data.type+"_"+data_r.data.id).val(data_r.data.apikey);
+                }
+                if(data_r.topdo){
+                    $('#pdopage .rows').html(data_r.data);
+                    //$('#pdopage .pagination').addClass('manual_pagi');
+                    $('#pdopage .pagination').html(data_r.pagination);
+                    $('#pdopage span.total').html(data_r.total);
+                }
+            }
+        });
+    },
+}
+
 $(document).ready(function(){
     if($(sl_delivery.options.wrapper).length){
         sl_delivery.initialize();
     }
+    sl_marketplace.initialize();
     // QUANTITY
     $('.sl-quantity button.btn-count').click(function(e){
         e.preventDefault();

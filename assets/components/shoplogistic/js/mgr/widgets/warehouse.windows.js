@@ -113,6 +113,105 @@ Ext.extend(shopLogistic.window.CreateWarehouse, shopLogistic.window.Default, {
                 }]
             }]
         },{
+            title: 'Реквизиты',
+            cls: 'def-panel',
+            layout: 'column',
+            items: [{
+                columnWidth: .3,
+                layout: 'form',
+                defaults: {msgTarget: 'under'},
+                items: [{
+                    xtype: 'combo-company_type',
+                    fieldLabel: _('shoplogistic_warehouse_company_type'),
+                    name: 'company_type',
+                    id: config.id + '-company_type',
+                    anchor: '99%'
+                }]
+            },{
+                columnWidth: .7,
+                layout: 'form',
+                defaults: {msgTarget: 'under'},
+                items: [{
+                    xtype: 'textfield',
+                    fieldLabel: _('shoplogistic_warehouse_ur_name'),
+                    name: 'ur_name',
+                    id: config.id + '-ur_name',
+                    anchor: '99%',
+                    allowBlank: false,
+                }]
+            },{
+                columnWidth: .5,
+                layout: 'form',
+                cls: 'no-margin',
+                defaults: {msgTarget: 'under'},
+                items: [{
+                    xtype: 'textfield',
+                    fieldLabel: _('shoplogistic_warehouse_inn'),
+                    name: 'inn',
+                    id: config.id + '-inn',
+                    anchor: '99%'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: _('shoplogistic_warehouse_bank_knumber'),
+                    name: 'bank_knumber',
+                    id: config.id + '-bank_knumber',
+                    anchor: '99%'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: _('shoplogistic_warehouse_bank_name'),
+                    name: 'bank_name',
+                    id: config.id + '-bank_name',
+                    anchor: '99%'
+                }]
+            },{
+                columnWidth: .5,
+                layout: 'form',
+                defaults: {msgTarget: 'under'},
+                items: [{
+                    xtype: 'textfield',
+                    fieldLabel: _('shoplogistic_warehouse_bank_number'),
+                    name: 'bank_number',
+                    id: config.id + '-bank_number',
+                    anchor: '99%'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: _('shoplogistic_warehouse_bank_bik'),
+                    name: 'bank_bik',
+                    id: config.id + '-bank_bik',
+                    anchor: '99%'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: _('shoplogistic_warehouse_unique_id'),
+                    name: 'unique_id',
+                    id: config.id + '-unique_id',
+                    anchor: '99%'
+                }]
+            },{
+                columnWidth: 1,
+                cls: 'no-margin',
+                layout: 'form',
+                defaults: {msgTarget: 'under'},
+                items: [{
+                    xtype: 'textarea',
+                    fieldLabel: _('shoplogistic_warehouse_address'),
+                    name: 'address',
+                    id: config.id + '-address',
+                    anchor: '99%'
+                }]
+            },{
+                columnWidth: 1,
+                cls: 'no-margin',
+                layout: 'form',
+                defaults: {msgTarget: 'under'},
+                items: [{
+                    xtype: 'textarea',
+                    fieldLabel: _('shoplogistic_warehouse_ur_address'),
+                    name: 'ur_address',
+                    id: config.id + '-ur_address',
+                    anchor: '99%'
+                }]
+            }]
+        },{
             xtype: 'textfield',
             fieldLabel: _('shoplogistic_warehouse_contact'),
             name: 'contact',

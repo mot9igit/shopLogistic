@@ -50,5 +50,15 @@ return [
 		'xtype' => 'textfield',
 		'value' => 'sl-/([a-zA-Z0-9]{4-10})/',
 		'area' => 'shoplogistic_main',
+	],
+	'open_fields_store' => [
+		'xtype' => 'textfield',
+		'value' => '',
+		'area' => 'shoplogistic_main',
+	],
+	'open_fields_warehouse' => [
+		'xtype' => 'textfield',
+		'value' => '',
+		'area' => 'shoplogistic_main',
 	]
 ];

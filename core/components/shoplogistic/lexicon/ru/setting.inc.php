@@ -25,3 +25,10 @@ $_lang['setting_shoplogistic_punkt_delivery_desc'] = 'ID способа дост
 
 $_lang['setting_shoplogistic_post_delivery'] = 'Способ доставки почтой России';
 $_lang['setting_shoplogistic_post_delivery_desc'] = 'ID способа доставки MS2 почтой России, у доставки нужен класс обработчик slHandler.';
+
+$_lang['setting_shoplogistic_regexp_gen_code'] = 'Маска для генерации ключа API';
+$_lang['setting_shoplogistic_regexp_gen_code_desc'] = 'sl-/([a-zA-Z0-9]{4-10})/';
+$_lang['setting_shoplogistic_open_fields_store'] = 'Поля доступные для редактирование в ЛК Магазина';
+$_lang['setting_shoplogistic_open_fields_store_desc'] = 'Список ключей через запятую';
+$_lang['setting_shoplogistic_open_fields_warehouse'] = 'Поля доступные для редактирование в ЛК Склада';
+$_lang['setting_shoplogistic_open_fields_warehouse_desc'] = 'Список ключей через запятую';

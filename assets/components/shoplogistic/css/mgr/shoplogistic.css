@@ -1,6 +1,12 @@
 /* Grid */
 .shoplogistic-shoplogistic-row-disabled { font-style: italic; opacity: .6; color: #555; }
 .x-grid3-col-actions { padding: 3px 0 3px 5px; }
+.def-panel{
+    padding: 15px 0;
+}
+.no-margin{
+    margin: 0 !important;
+}
 
 /* Actions */
 .action-red { color: darkred !important; }

@@ -182,7 +182,7 @@ Ext.extend(shopLogistic.grid.Warehouse, MODx.grid.Grid, {
     },
 
     getFields: function () {
-        return ['id', 'name', 'city', 'description', 'active', 'actions'];
+        return ['id', 'name', 'apikey','city', 'company_type', 'inn', 'bank_number', 'bank_knumber', 'bank_bik', 'bank_name', 'unique_id', 'address' , 'ur_address', 'description', 'active', 'actions'];
     },
 
     getColumns: function () {
