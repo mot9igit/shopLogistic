@@ -312,8 +312,10 @@ var sl_marketplace = {
     options: {
         wrapper: '.sl_wrap',
         live_form: '.sl_live_form',
+        form: '.sl_form',
         generate_api: '.regerate_apikey',
         profile_product: '.profile-products__item-wrap',
+        alert_change_btn: '.alert_change_btn'
     },
     initialize: function () {
         $(document).on("click", sl_marketplace.options.generate_api, function(e) {
@@ -331,8 +333,25 @@ var sl_marketplace = {
             };
             sl_marketplace.send(data);
         });
+        $(document).on("click", sl_marketplace.options.alert_change_btn, function(e) {
+            e.preventDefault();
+            var form = $(this).closest('form');
+            form.find('input').each(function(i){
+                var name = $(this).attr("name");
+                var val = $(this).val();
+                if(name != 'sl_action'){
+                    $("#change_profile_data").find("input[name="+name+"]").val(val);
+                }
+            });
+        });
         $(document).on('submit', sl_marketplace.options.live_form, function(e){
             e.preventDefault();
+            var data = $(this).serialize();
+            sl_marketplace.send(data);
+        });
+        $(document).on('submit', sl_marketplace.options.form, function(e){
+            e.preventDefault();
+            $(this).find('.message').html("");
             var data = $(this).serialize();
             sl_marketplace.send(data);
         });
@@ -368,7 +387,7 @@ var sl_marketplace = {
             $('#remain input[name="type"]').val(type);
             $('#remain input[name="col_id"]').val(col_id);
             $('#remain input[name="remains"]').val(remains);
-            $('#remain input[name="price"]').val(price);
+            $('#remain input[name="price"]').val(price.replace(/\s+/g, ''));
             $('#remain textarea[name="description"]').val(description);
             var remainModal = new bootstrap.Modal(document.getElementById('remain'));
             remainModal.show();
@@ -455,9 +474,46 @@ var sl_marketplace = {
                 if(data_r.data.apikey){
                     $("#apikey_"+data_r.data.type+"_"+data_r.data.id).val(data_r.data.apikey);
                 }
+                if(data_r.data.type && data_r.data.action != 'sw/alert_change'){
+                    var form = $(".form_edit_"+data_r.data.type+"_"+data_r.data.id);
+                    for (key in data_r.data) {
+                        form.find('input[name='+key+']').val(data_r.data[key]);
+                    }
+                    form.find('.message').html(data_r.message);
+                    $('html, body').animate({
+                        scrollTop: form.offset().top
+                    }, 500);
+                    setTimeout(function(){
+                        form.find('.message').hide("slow", function() {
+                            form.find('.message').html();
+                        }).html('');
+                    }, 2000);
+                }
+                if(data_r.data.remains){
+                    var form = $("#remain form");
+                    form.find('.message').html(data_r.message);
+                    setTimeout(function(){
+                        form.find('.message').hide("slow", function() {
+                            form.find('.message').html();
+                        }).html('');
+                    }, 2000);
+                    $(sl_marketplace.options.live_form).trigger("submit");
+
+                }
+                if(data_r.data.action == 'sw/alert_change'){
+                    var form = $("#change_profile_data form");
+                    form.find('.message').html(data_r.message);
+                    $('.modal').animate({
+                        scrollTop: 0
+                    }, 500);
+                    setTimeout(function(){
+                        form.find('.message').hide("slow", function() {
+                            form.find('.message').html();
+                        }).html('');
+                    }, 2000);
+                }
                 if(data_r.topdo){
                     $('#pdopage .rows').html(data_r.data);
-                    //$('#pdopage .pagination').addClass('manual_pagi');
                     $('#pdopage .pagination').html(data_r.pagination);
                     $('#pdopage span.total').html(data_r.total);
                 }

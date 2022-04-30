@@ -1,5 +1,10 @@
 Changelog for shopLogistic.
 
+0.0.6-pl
+==============
+- Add change Stores & Warehouses data requests
+- Add a manualy edit remains
+
 0.0.5-pl
 ==============
 - Add more fields to SlStores & slWarehouse

@@ -9,6 +9,8 @@ return [
 			'OnLoadWebDocument' => [],
 			'msOnManagerCustomCssJs' => [],
 			'msOnCreateOrder' => [],
+			'OnHandleRequest' => [],
+			'OnPageNotFound' => [],
         ],
     ],
 ];

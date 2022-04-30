@@ -54,6 +54,8 @@ class slStoresGetListProcessor extends modObjectGetListProcessor
         $array = $object->toArray();
         $array['actions'] = [];
 
+		$array['city'] = $this->modx->shopLogistic->getCityNameById($array['city']);
+
         // Edit
         $array['actions'][] = [
             'cls' => '',

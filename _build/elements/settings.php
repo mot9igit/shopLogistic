@@ -53,12 +53,32 @@ return [
 	],
 	'open_fields_store' => [
 		'xtype' => 'textfield',
-		'value' => '',
+		'value' => 'contact,email,phone',
 		'area' => 'shoplogistic_main',
 	],
 	'open_fields_warehouse' => [
 		'xtype' => 'textfield',
-		'value' => '',
+		'value' => 'contact,email,phone',
 		'area' => 'shoplogistic_main',
+	],
+	'phx_prefix' => [
+		'xtype' => 'textfield',
+		'value' => 'cf.',
+		'area' => 'shoplogistic_city',
+	],
+	'city_fields' => [
+		'xtype' => 'textfield',
+		'value' => 'key,city,phone,email',
+		'area' => 'shoplogistic_city',
+	],
+	'catalogs' => [
+		'xtype' => 'textfield',
+		'value' => '',
+		'area' => 'shoplogistic_city',
+	],
+	'km' => [
+		'xtype' => 'numberfield',
+		'value' => '80',
+		'area' => 'shoplogistic_city',
 	]
 ];

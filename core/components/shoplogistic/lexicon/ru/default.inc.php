@@ -26,6 +26,8 @@ $_lang['shoplogistic_store_email'] = 'E-mail';
 $_lang['shoplogistic_store_phone'] = 'Телефон';
 $_lang['shoplogistic_store_file'] = 'Ссылка на файл';
 $_lang['shoplogistic_store_coordinats'] = 'Координаты';
+$_lang['shoplogistic_store_lat'] = 'Широта';
+$_lang['shoplogistic_store_lng'] = 'Долгота';
 $_lang['shoplogistic_store_properties'] = 'Свойства';
 $_lang['shoplogistic_store_description'] = 'Описание';
 $_lang['shoplogistic_store_active'] = 'Активно';
@@ -90,6 +92,8 @@ $_lang['shoplogistic_warehouse_contact'] = 'Контактное лицо';
 $_lang['shoplogistic_warehouse_email'] = 'E-mail';
 $_lang['shoplogistic_warehouse_phone'] = 'Телефон';
 $_lang['shoplogistic_warehouse_file'] = 'Ссылка на файл';
+$_lang['shoplogistic_warehouse_lat'] = 'Широта';
+$_lang['shoplogistic_warehouse_lng'] = 'Долгота';
 $_lang['shoplogistic_warehouse_coordinats'] = 'Координаты';
 $_lang['shoplogistic_warehouse_properties'] = 'Свойства';
 $_lang['shoplogistic_warehouse_description'] = 'Описание';
@@ -176,3 +180,88 @@ $_lang['shoplogistic_order_delivery_info_pvz'] = 'Пункт самовывоз�
 $_lang['shoplogistic_apikey_placeholder'] = 'Можно сгенерировать инструментом выше';
 $_lang['shoplogistic_apikey_gen'] = 'Маска для генерации';
 $_lang['shoplogistic_apikey_gen_btn'] = '<i class="icon icon-magic"></i> Генерировать';
+
+$_lang['shoplogistic_panel_city'] = 'Города';
+$_lang['shoplogistic_panel_city_desc'] = 'Тут отображаются города и их папки';
+
+$_lang['shoplogistic_city_grid_id'] = 'ID';
+$_lang['shoplogistic_city_grid_key'] = 'Ключ города';
+$_lang['shoplogistic_city_grid_fias_id'] = 'ФИАС ID - (можно посмотреть <a href="https://dadata.ru/suggestions/#address" target="_blank">тут</a>)';
+$_lang['shoplogistic_city_grid_key_empty'] = 'Пример: perm';
+$_lang['shoplogistic_city_grid_https'] = 'HTTPS';
+$_lang['shoplogistic_city_grid_city'] = 'Город';
+$_lang['shoplogistic_city_grid_city_r'] = 'Город (склонение)';
+$_lang['shoplogistic_city_grid_phone'] = 'Телефон';
+$_lang['shoplogistic_city_grid_email'] = 'Эл. Почта';
+$_lang['shoplogistic_city_grid_address'] = 'Адрес';
+$_lang['shoplogistic_city_grid_address_full'] = 'Полный адрес';
+$_lang['shoplogistic_city_grid_address_coordinats'] = 'Координаты';
+$_lang['shoplogistic_city_grid_actions'] = 'Действия';
+$_lang['shoplogistic_city_grid_default'] = 'Город по умолчанию';
+$_lang['shoplogistic_city_grid_lat'] = 'Широта';
+$_lang['shoplogistic_city_grid_lng'] = 'Долгота';
+$_lang['shoplogistic_err_name_ae'] = 'Такой ключ уже есть!';
+
+$_lang['shoplogistic_grid_city_search_empty'] = 'Ключ или название города';
+
+$_lang['shoplogistic_form_file'] = 'Файл';
+$_lang['shoplogistic_form_start'] = 'Загрузить';
+$_lang['shoplogistic_import_header'] = 'Загрузка завершена!';
+$_lang['shoplogistic_form_loading'] = 'Состояние импорта';
+$_lang['shoplogistic_form_loading_text'] = 'Городов добавлено:';
+
+$_lang['shoplogistic_window_main'] = 'Основное';
+$_lang['shoplogistic_window_fields'] = 'Дополнительные поля';
+$_lang['shoplogistic_fields_grid_name'] = 'Название';
+$_lang['shoplogistic_fields_grid_key'] = 'Ключ';
+$_lang['shoplogistic_fields_grid_value'] = 'Значение';
+$_lang['shoplogistic_fields_grid_search_empty'] = 'Ключ или значение';
+$_lang['shoplogistic_err_key_ae'] = 'Такой ключ уже добавлен для данного домена!';
+
+$_lang['shoplogistic_resource_tab'] = 'Города и папки';
+$_lang['shoplogistic_resource_tab_desc'] = 'Здесь вы можете вставлять содержимое для каждого города';
+$_lang['shoplogistic_resource_grid_domain'] = 'Город';
+$_lang['shoplogistic_resource_grid_content'] = 'Содержимое';
+$_lang['shoplogistic_resource_domain_ae'] = 'Нельзя добавлять 2 содержимых для одного города!';
+
+$_lang['shoplogistic_storeremains'] = 'Остатки магазина';
+$_lang['shoplogistic_storeremains_id'] = 'ID';
+$_lang['shoplogistic_storeremains_product_name'] = 'Наименование товара';
+$_lang['shoplogistic_storeremains_product_id'] = 'ID товара';
+$_lang['shoplogistic_storeremains_product_article'] = 'Артикул';
+$_lang['shoplogistic_storeremains_store_name'] = 'Наименование магазина';
+$_lang['shoplogistic_storeremains_store_id'] = 'ID магазина';
+$_lang['shoplogistic_storeremains_remains'] = 'Остаток';
+$_lang['shoplogistic_storeremains_description'] = 'Описание';
+$_lang['shoplogistic_storeremains_price'] = 'Стоимость';
+
+$_lang['shoplogistic_storeremain_create'] = 'Создать остаток';
+$_lang['shoplogistic_storeremain_update'] = 'Изменить остаток';
+$_lang['shoplogistic_storeremain_remove'] = 'Удалить остаток';
+$_lang['shoplogistic_storeremains_remove'] = 'Удалить остатки';
+$_lang['shoplogistic_storeremain_remove_confirm'] = 'Вы уверены, что хотите удалить этот остаток?';
+$_lang['shoplogistic_storeremains_remove_confirm'] = 'Вы уверены, что хотите удалить эти остатки?';
+
+$_lang['shoplogistic_storeremains_err_product_id'] = "Не заполнен product ID!";
+$_lang['shoplogistic_storeremains_err_double'] = "Остаток такого товара уже есть, отредактируйте существующий!";
+
+$_lang['shoplogistic_warehouseremains'] = 'Остатки склада';
+$_lang['shoplogistic_warehouseremains_id'] = 'ID';
+$_lang['shoplogistic_warehouseremains_product_name'] = 'Наименование товара';
+$_lang['shoplogistic_warehouseremains_product_id'] = 'ID товара';
+$_lang['shoplogistic_warehouseremains_product_article'] = 'Артикул';
+$_lang['shoplogistic_warehouseremains_warehouse_name'] = 'Наименование склада';
+$_lang['shoplogistic_warehouseremains_warehouse_id'] = 'ID склада';
+$_lang['shoplogistic_warehouseremains_remains'] = 'Остаток';
+$_lang['shoplogistic_warehouseremains_description'] = 'Описание';
+$_lang['shoplogistic_warehouseremains_price'] = 'Стоимость';
+
+$_lang['shoplogistic_warehouseremain_create'] = 'Создать остаток';
+$_lang['shoplogistic_warehouseremain_update'] = 'Изменить остаток';
+$_lang['shoplogistic_warehouseremain_remove'] = 'Удалить остаток';
+$_lang['shoplogistic_warehouseremains_remove'] = 'Удалить остатки';
+$_lang['shoplogistic_warehouseremain_remove_confirm'] = 'Вы уверены, что хотите удалить этот остаток?';
+$_lang['shoplogistic_warehouseremains_remove_confirm'] = 'Вы уверены, что хотите удалить эти остатки?';
+
+$_lang['shoplogistic_warehouseremains_err_product_id'] = "Не заполнен product ID!";
+$_lang['shoplogistic_warehouseremains_err_double'] = "Остаток такого товара уже есть, отредактируйте существующий!";

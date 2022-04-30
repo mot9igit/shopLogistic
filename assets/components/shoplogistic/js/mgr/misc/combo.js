@@ -221,3 +221,63 @@ shopLogistic.combo.company_type = function(config) {
 };
 Ext.extend(shopLogistic.combo.company_type,MODx.combo.ComboBox);
 Ext.reg('combo-company_type',shopLogistic.combo.company_type);
+
+shopLogistic.combo.City = function (config) {
+    config = config || {};
+    Ext.applyIf(config, {
+        url: shopLogistic.config.connector_url,
+        baseParams: {
+            action: 'mgr/city/load/city',
+        },
+        name: 'city',
+        hiddenName: 'city',
+        fields: ['id', 'city'],
+        mode: 'remote',
+        displayField: 'city',
+        fieldLabel: _('shoplogistic_city_grid_city'),
+        valueField: 'id',
+        editable: true,
+        anchor: '99%',
+        allowBlank: false,
+        autoLoad: false
+    });
+    shopLogistic.combo.City.superclass.constructor.call(this, config);
+};
+Ext.extend(shopLogistic.combo.City, MODx.combo.ComboBox);
+Ext.reg('shoplogistic-combo-city', shopLogistic.combo.City);
+
+shopLogistic.combo.Product = function (config) {
+    config = config || {};
+    Ext.applyIf(config, {
+        url: shopLogistic.config.connector_url,
+        baseParams: {
+            action: 'mgr/system/product/getlist',
+        },
+        name: 'product_id',
+        hiddenName: 'product_id',
+        fields: ['id', 'pagetitle', 'article', 'price'],
+        mode: 'remote',
+        displayField: 'pagetitle',
+        fieldLabel: _('shoplogistic_storeremains_product_name'),
+        valueField: 'id',
+        editable: true,
+        anchor: '99%',
+        allowBlank: false,
+        autoLoad: true,
+        tpl: new Ext.XTemplate(
+            '\
+            <tpl for=".">\
+                <div class="x-combo-list-item">\
+                    <span>\
+                        <small>({id})</small>\
+                        <b>{pagetitle} ({article}) {price} р.</b>\
+                    </span>\
+                </div>\
+            </tpl>',
+            {compiled: true}
+        ),
+    });
+    shopLogistic.combo.Product.superclass.constructor.call(this, config);
+};
+Ext.extend(shopLogistic.combo.Product, MODx.combo.ComboBox);
+Ext.reg('shoplogistic-combo-product', shopLogistic.combo.Product);

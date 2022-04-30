@@ -2,6 +2,7 @@
 
 $_lang['area_shoplogistic_main'] = 'Основные';
 $_lang['area_shoplogistic_eshoplogistic'] = 'eShopLogistic';
+$_lang['area_shoplogistic_city'] = 'Города и папки';
 
 $_lang['setting_shoplogistic_frontend_css'] = 'СSS-файл для фронта';
 $_lang['setting_shoplogistic_frontend_css_desc'] = 'Можно указать тут свой файл или перенести стили в свой css-файл и очистить поле.';
@@ -32,3 +33,15 @@ $_lang['setting_shoplogistic_open_fields_store'] = 'Поля доступные 
 $_lang['setting_shoplogistic_open_fields_store_desc'] = 'Список ключей через запятую';
 $_lang['setting_shoplogistic_open_fields_warehouse'] = 'Поля доступные для редактирование в ЛК Склада';
 $_lang['setting_shoplogistic_open_fields_warehouse_desc'] = 'Список ключей через запятую';
+
+$_lang['setting_shoplogistic_phx_prefix'] = 'Префикс плейсхолдеров';
+$_lang['setting_shoplogistic_cityfolder_phx_prefix_desc'] = 'По данному префиксу можно получить доступ к плейсхолдерам';
+
+$_lang['setting_shoplogistic_city_fields'] = 'Поля таблицы';
+$_lang['setting_shoplogistic_city_fields_desc'] = 'Поля таблицы городов';
+
+$_lang['setting_shoplogistic_catalogs'] = 'Каталоги, участвующие в данном городе';
+$_lang['setting_shoplogistic_catalogs_desc'] = 'Лучше глобально использовать компонент';
+
+$_lang['setting_shoplogistic_km'] = 'Кол-во километров для определения ближайшего города';
+$_lang['setting_shoplogistic_km_desc'] = 'Если расстояние больше данного значения, то выберется город по умолчанию. Если данный параметр не нужен, напишите 0';

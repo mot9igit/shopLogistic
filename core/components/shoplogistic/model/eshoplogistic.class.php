@@ -57,7 +57,7 @@ class eShopLogistic
 		curl_setopt($curl, CURLOPT_POSTFIELDS, array_merge($data,['key' => $apiKey]));
 		$result = curl_exec($curl);
 		curl_close($curl);
-		$this->modx->log(1, print_r($result, 1));
+		//$this->modx->log(1, print_r($result, 1));
 		return json_decode($result,1);
 	}
 

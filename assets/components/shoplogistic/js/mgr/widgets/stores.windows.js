@@ -12,7 +12,7 @@ shopLogistic.window.CreateStore = function (config) {
 
     Ext.applyIf(config, {
         title: _('shoplogistic_store_create'),
-        width: 600,
+        width: 900,
         baseParams: {
             action: 'mgr/store/create',
         },
@@ -106,7 +106,7 @@ Ext.extend(shopLogistic.window.CreateStore, shopLogistic.window.Default, {
                 layout: 'form',
                 defaults: {msgTarget: 'under'},
                 items: [{
-                    xtype: 'textfield',
+                    xtype: 'shoplogistic-combo-city',
                     fieldLabel: _('shoplogistic_store_city'),
                     name: 'city',
                     id: config.id + '-city',
@@ -255,6 +255,18 @@ Ext.extend(shopLogistic.window.CreateStore, shopLogistic.window.Default, {
             name: 'coordinats',
             id: config.id + '-coordinats',
             anchor: '99%'
+        },{
+            xtype: 'textfield',
+            fieldLabel: _('shoplogistic_store_lat'),
+            name: 'lat',
+            id: config.id + '-lat',
+            anchor: '99%'
+        },{
+            xtype: 'textfield',
+            fieldLabel: _('shoplogistic_store_lng'),
+            name: 'lng',
+            id: config.id + '-lng',
+            anchor: '99%'
         }, {
             xtype: 'textarea',
             fieldLabel: _('shoplogistic_store_description'),
@@ -273,7 +285,7 @@ shopLogistic.window.UpdateStore = function (config) {
     Ext.applyIf(config, {
         baseParams: {
             title: _('shoplogistic_store_update'),
-            width: 600,
+            width: 900,
             action: 'mgr/store/update',
         },
         bodyCssClass: 'tabs',
@@ -293,6 +305,12 @@ Ext.extend(shopLogistic.window.UpdateStore, shopLogistic.window.CreateStore, {
                 title: _('shoplogistic_storeusers'),
                 items: [{
                     xtype: 'shoplogistic-grid-storeusers',
+                    record: config.record,
+                }]
+            }, {
+                title: _('shoplogistic_storeremains'),
+                items: [{
+                    xtype: 'shoplogistic-grid-storeremains',
                     record: config.record,
                 }]
             }]

@@ -12,7 +12,7 @@ shopLogistic.window.CreateWarehouse = function (config) {
 
     Ext.applyIf(config, {
         title: _('shoplogistic_warehouse_create'),
-        width: 600,
+        width: 900,
         baseParams: {
             action: 'mgr/warehouse/create',
         },
@@ -105,7 +105,7 @@ Ext.extend(shopLogistic.window.CreateWarehouse, shopLogistic.window.Default, {
                 layout: 'form',
                 defaults: {msgTarget: 'under'},
                 items: [{
-                    xtype: 'textfield',
+                    xtype: 'shoplogistic-combo-city',
                     fieldLabel: _('shoplogistic_warehouse_city'),
                     name: 'city',
                     id: config.id + '-city',
@@ -254,6 +254,18 @@ Ext.extend(shopLogistic.window.CreateWarehouse, shopLogistic.window.Default, {
             name: 'coordinats',
             id: config.id + '-coordinats',
             anchor: '99%'
+        },{
+            xtype: 'textfield',
+            fieldLabel: _('shoplogistic_warehouse_lat'),
+            name: 'lat',
+            id: config.id + '-lat',
+            anchor: '99%'
+        },{
+            xtype: 'textfield',
+            fieldLabel: _('shoplogistic_warehouse_lng'),
+            name: 'lng',
+            id: config.id + '-lng',
+            anchor: '99%'
         }, {
             xtype: 'textarea',
             fieldLabel: _('shoplogistic_warehouse_description'),
@@ -272,7 +284,7 @@ shopLogistic.window.UpdateWarehouse = function (config) {
     Ext.applyIf(config, {
         baseParams: {
             title: _('shoplogistic_warehouse_update'),
-            width: 600,
+            width: 900,
             action: 'mgr/warehouse/update',
         },
         bodyCssClass: 'tabs',
@@ -292,6 +304,12 @@ Ext.extend(shopLogistic.window.UpdateWarehouse, shopLogistic.window.CreateWareho
                 title: _('shoplogistic_warehouseusers'),
                 items: [{
                     xtype: 'shoplogistic-grid-warehouseusers',
+                    record: config.record,
+                }]
+            }, {
+                title: _('shoplogistic_warehouseremains'),
+                items: [{
+                    xtype: 'shoplogistic-grid-warehouseremains',
                     record: config.record,
                 }]
             }]
