@@ -1,5 +1,4 @@
 <?php
-
 $corePath = $modx->getOption('shoplogistic_core_path', array(), $modx->getOption('core_path') . 'components/shoplogistic/');
 $shopLogistic = $modx->getService('shopLogistic', 'shopLogistic', $corePath . 'model/');
 if (!$shopLogistic) {

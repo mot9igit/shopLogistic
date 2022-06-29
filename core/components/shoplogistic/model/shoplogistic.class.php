@@ -21,7 +21,7 @@ class shopLogistic
 			'corePath' => $corePath,
 			'modelPath' => $corePath . 'model/',
 			'processorsPath' => $corePath . 'processors/',
-			'version' => '0.0.5',
+			'version' => '0.0.7',
 
 			'connectorUrl' => $assetsUrl . 'connector.php',
 			'actionUrl' => $assetsUrl . 'action.php',
@@ -114,6 +114,24 @@ class shopLogistic
 		$this->esl = new eShopLogistic($this, $this->modx);
 		$this->esl->init();
 
+		// init city
+		// $this->modx->log(1, print_r($_SESSION['sl_location'], 1));
+		$location = $this->getLoocationByIP();
+		$store = $this->get_nearby('slStores', array($location['location']['data']['geo_lat'], $location['location']['data']['geo_lon']));
+		// $this->modx->log(1, print_r($store, 1));
+		if(empty($_SESSION['sl_location'])){
+			$_SESSION['sl_location'] = $location;
+			$_SESSION['sl_location']['store'] = $store[0];
+			$_SESSION['sl_location']['pls'] = array(
+				'citycheck' => 1,
+				'city' => $location['location']['value'],
+				'store' => $store[0]['name']
+			);
+		}
+		// $this->modx->log(1, print_r($_SESSION['sl_location'], 1));
+		$this->modx->setPlaceholders($_SESSION['sl_location']['pls'], 'sl.');
+		$this->modx->setPlaceholders($_SESSION['sl_location']['store'], 'store.');
+
 		return $load;
 	}
 
@@ -135,8 +153,7 @@ class shopLogistic
 		if(is_dir($this->modx->getOption('core_path').'components/minishop2/model/minishop2/')) {
 			$this->ms2 = $this->modx->getService('miniShop2');
 			if ($this->ms2 instanceof miniShop2) {
-				$context = $this->config['ctx'];
-				$this->ms2->initialize($context);
+				$this->ms2->initialize($ctx);
 				return true;
 			}
 		}
@@ -163,7 +180,7 @@ class shopLogistic
 		$this->initialize($ctx, array('json_response' => $isAjax));
 		switch ($action) {
 			case 'get/suggestion':
-				if($data['value']){
+				if ($data['value']) {
 					$token = $this->modx->getOption('shoplogistic_api_key_dadata');
 					$secret = $this->modx->getOption('shoplogistic_secret_key_dadata');
 					$this->dadata = new Dadata($token, $secret);
@@ -173,7 +190,7 @@ class shopLogistic
 				break;
 			case 'delivery/get_price':
 				$s = $data['service'];
-				if($data['fias']){
+				if ($data['fias']) {
 					$data = array(
 						"target" => $data['fias']
 					);
@@ -182,7 +199,7 @@ class shopLogistic
 					$resp = $this->esl->query("search", $data);
 					//$this->modx->log(1, print_r($resp, 1));
 					$services = array();
-					foreach($init['data']['services'] as $key => $val){
+					foreach ($init['data']['services'] as $key => $val) {
 						$tmp = array(
 							"name" => $val["name"],
 							"from" => $val["city_code"],
@@ -199,28 +216,28 @@ class shopLogistic
 					);
 
 					$offers = array();
-					if($this->ms2){
+					if ($this->ms2) {
 						$cart = $this->ms2->cart->get();
-						foreach($cart as $product){
-							if($product['places']){
-								foreach($product['places'] as $key => $val){
-									$offers[$product['id'].'_'.$key] = [
+						foreach ($cart as $product) {
+							if ($product['places']) {
+								foreach ($product['places'] as $key => $val) {
+									$offers[$product['id'] . '_' . $key] = [
 										'article' => $product['id'],
 										'name' => $product['id'],
 										'count' => $product['count'],
 										'price' => $product['price'],
 										'weight' => $val['weight'],
-										'dimensions' => $val['dimensions'] ?:''
+										'dimensions' => $val['dimensions'] ?: ''
 									];
 								}
-							}else{
+							} else {
 								$offers[$product['id']] = [
 									'article' => $product['id'],
 									'name' => $product['id'],
 									'count' => $product['count'],
 									'price' => $product['price'],
 									'weight' => $product['weight'],
-									'dimensions' => $product['dimensions'] ?:''
+									'dimensions' => $product['dimensions'] ?: ''
 								];
 							}
 						}
@@ -228,7 +245,7 @@ class shopLogistic
 
 					$data['offers'] = json_encode($offers);
 
-					$resp = $this->esl->query("delivery/".$s, $data);
+					$resp = $this->esl->query("delivery/" . $s, $data);
 					//$this->modx->log(1, print_r($resp,1));
 					$services[$s]["price"] = $resp['data'];
 					$services['main_key'] = $s;
@@ -253,9 +270,49 @@ class shopLogistic
 			case 'sw/alert_change':
 				$response = $this->sw_alert_change($data);
 				break;
-
+			case 'calendar/get':
+				$response = $this->getCalendar($data);
+				break;
+			case 'city/accept':
+				$response = $this->setShopCity($data);
+				break;
+			case 'get/cities':
+				$response = $this->getCities($data);
+				break;
+			case 'get/stores':
+				$response = $this->getStores($data);
+				break;
+			case 'city/check':
+				$response = $this->checkCity($data);
+				break;
+			case 'city/more':
+				$response = $this->cityMore($data);
+				break;
+			case 'store/check':
+				$response = $this->checkStore($data);
+				break;
 		}
 		return $response;
+	}
+
+	public function setShopCity($data){
+		$_SESSION['sl_location']['pls']['citycheck'] = 0;
+		return array(
+			"success" => true,
+			"data" => array(
+				"cityclose" => 1
+			)
+		);
+	}
+
+	public function getCalendar($data){
+		$output['data'] = array(
+			"calendar" => 1
+		);
+		$output['data']['html'] = $this->modx->runSnippet("sl.calendar", array(
+			"tpl" => "@FILE chunks/sl_calendar.tpl"
+		));
+		return $output;
 	}
 
 	public function sw_alert_change($data){
@@ -678,6 +735,169 @@ class shopLogistic
 
 				$fields->save();
 			}
+		}
+	}
+
+	public function checkCity($data){
+		$store = $this->get_nearby('slStores', array($data['data']['data']['geo_lat'], $data['data']['data']['geo_lon']));
+		$_SESSION['sl_location'] = $data['data'];
+		$_SESSION['sl_location']['store'] = $store[0];
+		$_SESSION['sl_location']['pls'] = array(
+			'citycheck' => 0,
+			'city' => $data['data']['data']['city_with_type']? : $data['data']['data']['settlement_with_type'],
+			'store' => $store[0]['name']
+		);
+		return array(
+			"success" => true,
+			"data" => array(
+				"reload" => true
+			)
+		);
+	}
+
+	public function checkStore($data){
+		if($data['data']['id']){
+			$store = $this->modx->getObject('slStores', $data['data']['id']);
+		}else{
+			$store = $this->modx->getObject('slStores', $data['data']['data']['id']);
+		}
+		if($store){
+			$_SESSION['sl_location']['store'] = $store->toArray();
+			$_SESSION['sl_location']['pls']['store'] = $_SESSION['sl_location']['store']['name'];
+		}
+		return array(
+			"success" => true,
+			"data" => array(
+				"reload" => true
+			)
+		);
+	}
+
+	public function cityMore($data){
+		$pos = array((float) $data['latitude'], (float) $data['longitude']);
+		$dt = json_decode($this->getGeoData($pos), 1);
+		$data = $dt['suggestions'][0];
+		$this->modx->log(1, print_r($data, 1));
+		$store = $this->get_nearby('slStores', array($data['data']['geo_lat'], $data['data']['geo_lon']));
+		$_SESSION['sl_location'] = $data;
+		$_SESSION['sl_location']['store'] = $store[0];
+		$_SESSION['sl_location']['pls'] = array(
+			'citycheck' => 0,
+			'city' => $data['data']['city_with_type']? : $data['data']['settlement_with_type'],
+			'store' => $store[0]['name']
+		);
+		$this->modx->log(1, print_r($_SESSION['sl_location'], 1));
+		return array(
+			"success" => true,
+			"data" => array(
+				"reload" => true
+			)
+		);
+	}
+
+	public function getGeoData($coords){
+		$url = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address';
+
+		$dt = array(
+			"lat" => $coords[0],
+			"lon" => $coords[1],
+			"count" => 1
+		);
+		$token = $this->modx->getOption("shoplogistic_api_key_dadata");
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dt, JSON_UNESCAPED_UNICODE));
+
+		$headers = array();
+		$headers[] = 'Content-Type: application/json';
+		$headers[] = 'Accept: application/json';
+		$headers[] = 'Authorization: Token ' . $token;
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+		$result = curl_exec($ch);
+		if (curl_errno($ch)) {
+			echo 'Error:' . curl_error($ch);
+		}
+		curl_close($ch);
+
+		$res = json_decode($result, true);
+
+		return $result;
+	}
+
+	/**
+	 * Get city suggestion by dadata
+	 * @param array $data
+	 * @return mixed
+	 */
+	public function getCities($data) {
+		//$this->modx->log(1, print_r($data, 1));
+		$dt = array(
+			'from_bound' => array(
+				"value" => "city"
+			),
+			'to_bound' => array(
+				"value" => "city"
+			),
+			"restrict_value" => 1
+		);
+		if($data['query']) {
+			$dt['query'] = $data['query'];
+
+			$token = $this->modx->getOption("shoplogistic_api_key_dadata");
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_URL, 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address');
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dt, JSON_UNESCAPED_UNICODE));
+
+			$headers = array();
+			$headers[] = 'Content-Type: application/json';
+			$headers[] = 'Accept: application/json';
+			$headers[] = 'Authorization: Token ' . $token;
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+			$result = curl_exec($ch);
+			if (curl_errno($ch)) {
+				echo 'Error:' . curl_error($ch);
+			}
+			curl_close($ch);
+
+			$res = json_decode($result, true);
+
+			return $result;
+		}
+	}
+
+	/**
+	 * Get city suggestion by dadata
+	 * @param array $data
+	 * @return mixed
+	 */
+	public function getStores($data) {
+		//$this->modx->log(1, print_r($data, 1));
+		$result = array();
+		if($data['query']) {
+			$query = $this->modx->newQuery("slStores");
+			$query->where(
+				array(
+					"name:LIKE" => "%".$data['query']."%"
+				)
+			);
+			$query->limit(5,0);
+			$stores = $this->modx->getCollection('slStores', $query);
+			foreach($stores as $store){
+				$tmp = array();
+				$tmp["value"] = $store->get('name');
+				$tmp["data"] = $store->toArray();
+				$result['suggestions'][] = $tmp;
+			}
+
+			return $result;
 		}
 	}
 

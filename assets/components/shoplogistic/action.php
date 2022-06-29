@@ -21,7 +21,7 @@ if (!$shopLogistic) {
 if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH'] != 'XMLHttpRequest') {
 	$modx->sendRedirect($modx->makeUrl($modx->getOption('site_start'), '', '', 'full'));
 }else{
-	$out = $shopLogistic->handleRequest($_REQUEST['sl_action'], @$_POST);
+	$out = $shopLogistic->handleRequest($_REQUEST['sl_action'], @$_REQUEST);
 	if(is_array ($out)){
 		echo $response = json_encode($out);
 	}else{

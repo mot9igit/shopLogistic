@@ -315,7 +315,9 @@ var sl_marketplace = {
         form: '.sl_form',
         generate_api: '.regerate_apikey',
         profile_product: '.profile-products__item-wrap',
-        alert_change_btn: '.alert_change_btn'
+        alert_change_btn: '.alert_change_btn',
+        geo_close: '.sl_city_close',
+        geo_more: '.sl_city_more_info',
     },
     initialize: function () {
         $(document).on("click", sl_marketplace.options.generate_api, function(e) {
@@ -332,6 +334,51 @@ var sl_marketplace = {
                 apikey: gen
             };
             sl_marketplace.send(data);
+        });
+        $(document).on("click", '.city_checked', function(e) {
+            e.preventDefault();
+            var action = 'city/check';
+            var data = {
+                sl_action: action,
+                data: $(this).data('data')
+            };
+            sl_marketplace.send(data);
+        });
+        $(document).on("click", '.store_checked', function(e) {
+            e.preventDefault();
+            var action = 'store/check';
+            var data = {
+                sl_action: action,
+                data: $(this).data('data')
+            };
+            sl_marketplace.send(data);
+        });
+        $(document).on("click", sl_marketplace.options.geo_close, function(e) {
+            e.preventDefault();
+            var action = 'city/accept';
+            var data = {
+                sl_action: action
+            };
+            sl_marketplace.send(data);
+        });
+        $(document).on("click", sl_marketplace.options.geo_more, function(e) {
+            e.preventDefault();
+            let geoposition = navigator.geolocation.getCurrentPosition(
+                function(position) {
+                                let latitude = position.coords.latitude;
+                                let longitude = position.coords.longitude;
+                                // геокодер
+                                var action = 'city/more';
+                                var data = {
+                                    sl_action: action,
+                                    longitude: longitude,
+                                    latitude: latitude
+                                };
+                                sl_marketplace.send(data);
+                            });
+            // show modal
+            var cityModal = new bootstrap.Modal(document.getElementById('modal_city'));
+            cityModal.show();
         });
         $(document).on("click", sl_marketplace.options.alert_change_btn, function(e) {
             e.preventDefault();
@@ -391,6 +438,19 @@ var sl_marketplace = {
             $('#remain textarea[name="description"]').val(description);
             var remainModal = new bootstrap.Modal(document.getElementById('remain'));
             remainModal.show();
+        });
+        // CALENDAR
+        $(document).on( "click", ".calendar_navigation", function(e){
+            e.preventDefault();
+            var month = $(this).data("month");
+            var year = $(this).data("year");
+            var action = 'calendar/get';
+            var data = {
+                sl_action: action,
+                month: month,
+                year: year
+            };
+            sl_marketplace.send(data);
         });
     },
     genRegExpString: function (str) {
@@ -471,34 +531,54 @@ var sl_marketplace = {
             dataType: 'json',
             data: data,
             success:  function(data_r) {
-                if(data_r.data.apikey){
-                    $("#apikey_"+data_r.data.type+"_"+data_r.data.id).val(data_r.data.apikey);
-                }
-                if(data_r.data.type && data_r.data.action != 'sw/alert_change'){
-                    var form = $(".form_edit_"+data_r.data.type+"_"+data_r.data.id);
-                    for (key in data_r.data) {
-                        form.find('input[name='+key+']').val(data_r.data[key]);
+                if(typeof data_r.data.reload !== "undefined"){
+                    if(data_r.data.reload) {
+                        document.location.reload();
                     }
-                    form.find('.message').html(data_r.message);
-                    $('html, body').animate({
-                        scrollTop: form.offset().top
-                    }, 500);
-                    setTimeout(function(){
-                        form.find('.message').hide("slow", function() {
-                            form.find('.message').html();
-                        }).html('');
-                    }, 2000);
                 }
-                if(data_r.data.remains){
-                    var form = $("#remain form");
-                    form.find('.message').html(data_r.message);
-                    setTimeout(function(){
-                        form.find('.message').hide("slow", function() {
-                            form.find('.message').html();
-                        }).html('');
-                    }, 2000);
-                    $(sl_marketplace.options.live_form).trigger("submit");
-
+                if(typeof data_r.data.apikey !== "undefined"){
+                    if(data_r.data.apikey) {
+                        $("#apikey_" + data_r.data.type + "_" + data_r.data.id).val(data_r.data.apikey);
+                    }
+                }
+                if(typeof data_r.data.cityclose !== "undefined"){
+                    if(data_r.data.cityclose) {
+                        $(".city_popup").removeClass('active');
+                    }
+                }
+                if(typeof data_r.data.calendar !== "undefined"){
+                    if(data_r.data.calendar){
+                        $("#calendar").html(data_r.data.html);
+                    }
+                }
+                if(typeof data_r.data.type !== "undefined"){
+                    if(data_r.data.type && data_r.data.action != 'sw/alert_change'){
+                        var form = $(".form_edit_"+data_r.data.type+"_"+data_r.data.id);
+                        for (key in data_r.data) {
+                            form.find('input[name='+key+']').val(data_r.data[key]);
+                        }
+                        form.find('.message').html(data_r.message);
+                        $('html, body').animate({
+                            scrollTop: form.offset().top
+                        }, 500);
+                        setTimeout(function(){
+                            form.find('.message').hide("slow", function() {
+                                form.find('.message').html();
+                            }).html('');
+                        }, 2000);
+                    }
+                }
+                if(typeof data_r.data.remains !== "undefined"){
+                    if(data_r.data.remains){
+                        var form = $("#remain form");
+                        form.find('.message').html(data_r.message);
+                        setTimeout(function(){
+                            form.find('.message').hide("slow", function() {
+                                form.find('.message').html();
+                            }).html('');
+                        }, 2000);
+                        $(sl_marketplace.options.live_form).trigger("submit");
+                    }
                 }
                 if(data_r.data.action == 'sw/alert_change'){
                     var form = $("#change_profile_data form");
@@ -512,10 +592,12 @@ var sl_marketplace = {
                         }).html('');
                     }, 2000);
                 }
-                if(data_r.topdo){
-                    $('#pdopage .rows').html(data_r.data);
-                    $('#pdopage .pagination').html(data_r.pagination);
-                    $('#pdopage span.total').html(data_r.total);
+                if(typeof data_r.topdo !== "undefined"){
+                    if(data_r.topdo){
+                        $('#pdopage .rows').html(data_r.data);
+                        $('#pdopage .pagination').html(data_r.pagination);
+                        $('#pdopage span.total').html(data_r.total);
+                    }
                 }
             }
         });

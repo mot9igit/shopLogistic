@@ -312,6 +312,12 @@ Ext.extend(shopLogistic.window.UpdateWarehouse, shopLogistic.window.CreateWareho
                     xtype: 'shoplogistic-grid-warehouseremains',
                     record: config.record,
                 }]
+            }, {
+                title: _('shoplogistic_warehousestores'),
+                items: [{
+                    xtype: 'shoplogistic-grid-warehousestores',
+                    record: config.record,
+                }]
             }]
         }];
     }

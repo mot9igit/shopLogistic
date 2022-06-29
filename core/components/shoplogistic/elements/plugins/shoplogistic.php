@@ -3,6 +3,17 @@ $corePath = $modx->getOption('shoplogistic_core_path', array(), $modx->getOption
 $shopLogistic = $modx->getService('shopLogistic', 'shopLogistic', $corePath . 'model/');
 /** @var modX $modx */
 switch ($modx->event->name) {
+	case 'OnMODXInit':
+		$modx->loadClass('msOrder');
+		$modx->map['msOrder']['fields']['store_id'] = 0;
+		$modx->map['msOrder']['fieldMeta']['store_id'] = [
+			'dbtype' => 'int',
+			'precision' => 11,
+			'phptype' => 'integer',
+			'null' => true,
+			'default' => 0
+		];
+		break;
 	case 'OnLoadWebDocument':
 		$scriptProperties = array();
 		$corePath = $modx->getOption('shoplogistic_core_path', array(), $modx->getOption('core_path') . 'components/shoplogistic/');
@@ -13,12 +24,12 @@ switch ($modx->event->name) {
 			$shopLogistic->initialize($modx->context->key);
 		}
 		if ($modx->getPlaceholder($modx->getOption('shoplogistic_phx_prefix').'city'));{
-			$content = $shopLogistic->getContent($modx->getPlaceholder($modx->getOption('shoplogistic_phx_prefix').'city'), $modx->resource->id);
-			if($content){
-				$modx->resource->cacheable = 0;
-				$modx->resource->content = $content;
-			}
+		$content = $shopLogistic->getContent($modx->getPlaceholder($modx->getOption('shoplogistic_phx_prefix').'city'), $modx->resource->id);
+		if($content){
+			$modx->resource->cacheable = 0;
+			$modx->resource->content = $content;
 		}
+	}
 
 		if(is_dir($modx->getOption('core_path').'components/minishop2/model/minishop2/')) {
 			$ms2 = $modx->getService('miniShop2');
@@ -51,6 +62,48 @@ switch ($modx->event->name) {
 				$controller->shopLogistic = $modx->getService('shopLogistic', 'shopLogistic', $corePath . 'model/');
 
 				$controller->shopLogistic->loadCustomOrderJsCss();
+
+
+				$modx->controller->addHtml("
+        	        <script>
+                    Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function(){
+                        let orderTab = this.fields.items[2].items
+                        let obj = {
+                            layout: 'column',
+                            defaults: {
+                                msgTarget: 'under',
+                                border: false
+                            },
+                            anchor: '100%',
+                            items: [
+                                { 
+                                    columnWidth: 1,
+                                    layout: 'form',
+                                    items:[
+                                        {
+                                            title: 'Дилер',
+                                            xtype: 'fieldset',
+                                            id: 'minishop2-fieldset-tc',
+                                            labelAlign: 'top',
+                                            autoHeight: true,
+                                            border: false,
+                                            items: [
+                                                {
+                                                    xtype: 'shoplogistic-combo-store',
+                            						name: 'store_id',
+                            						fieldLabel: _('shoplogistic_storeremains_store_name'),
+                            						anchor: '100%',
+                                                    value: this.record.store_id
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                        orderTab.push(obj)
+                    });                
+                </script>");
 			}
 		}
 		break;
@@ -67,6 +120,11 @@ switch ($modx->event->name) {
 			$order_properties = $msOrder->get('properties');
 			$order_properties['sl'] = $sl_data;
 			$msOrder->set('properties', $order_properties);
+			$msOrder->save();
+		}
+
+		if(isset($_SESSION['sl_location']['store']['id'])){
+			$msOrder->set('store_id', $_SESSION['sl_location']['store']['id']);
 			$msOrder->save();
 		}
 

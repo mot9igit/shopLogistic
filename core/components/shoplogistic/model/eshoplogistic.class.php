@@ -108,4 +108,134 @@ class eShopLogistic
 		}
 		return false;
 	}
+
+	public function getYaDeliveryPrice($type, $id = 0){
+		$url = "https://b2b.taxi.yandex.net/b2b/cargo/integration/v1/check-price";
+		$start_coodinats = explode(",", $_SESSION['sl_location']['store']['coordinats']);
+		foreach($start_coodinats as $key => $val){
+			$start_coodinats[$key] = (float) $val;
+		}
+		$data = array();
+		$data['route_points'] = array(
+			0 => array(
+				"coordinates" => array((float) $_SESSION['sl_location']['store']['lng'], (float) $_SESSION['sl_location']['store']['lat'])
+			),
+			1 => array(
+				"coordinates" => array((float) $_SESSION['sl_location']['location']['data']['geo_lon'], (float) $_SESSION['sl_location']['location']['data']['geo_lat'])
+			)
+		);
+		if($type == 'card'){
+			if($id){
+				$product = $this->modx->getObject("modResource", $id);
+				$tmp = array();
+				if($product){
+					$par = json_decode($product->getTVValue("delivery_attributes"), true);
+					if($par){
+						foreach($par as $p) {
+							$tmplr = array();
+							$tmplr['weight'] = $p['weight'];
+							$tmplr['dimensions'] = explode('*', $p['dimensions']);
+							$data['items'][] = array(
+								"quantity" => 1,
+								"size" => array(
+									"length" => str_replace(",", ".", $tmplr['dimensions'][0]),
+									"width" => str_replace(",", ".", $tmplr['dimensions'][1]),
+									"height" => str_replace(",", ".", $tmplr['dimensions'][2]),
+								),
+								"weight" => $tmplr['weight']
+							);
+						}
+					}else{
+						$q = $this->modx->newQuery('msProductOption', [
+							'product_id' => $id,
+							'key:IN' => ['length','width','height','netto','brutto']
+						]);
+
+						$options = $this->modx->getIterator('msProductOption', $q);
+
+						$params = [
+							'weight' => 0,
+							'dimensions' => []
+						];
+
+						foreach($options as $option) {
+							switch($option->key) {
+								case 'brutto':
+									$params['weight'] = $option->value;
+									break;
+								case 'netto':
+									if(empty($params['weight'])) {
+										$params['weight'] = $option->value;
+									}
+									break;
+								case 'length':
+									$params['dimensions'][0] = (int)$option->value / 10;
+									break;
+								case 'width':
+									$params['dimensions'][1] = (int)$option->value / 10;
+									break;
+								case 'height':
+									$params['dimensions'][2] = (int)$option->value / 10;
+									break;
+							}
+						}
+
+						$data['items'][] = array(
+							"quantity" => 1,
+							"size" => array(
+								"length" => (float) str_replace(",", ".", $params['dimensions'][0]) * 0.01,
+								"width" => (float) str_replace(",", ".", $params['dimensions'][1]) * 0.01,
+								"height" => (float) str_replace(",", ".", $params['dimensions'][2]) * 0.01,
+							),
+							"weight" => (float) $params['weight']
+						);
+					}
+					$ya_delivery_data = $this->yaDeliveryRequest($url, $data);
+					if(isset($ya_delivery_data['code'])){
+						$this->yaDeliveryReport($url.' '.$ya_delivery_data['code'].' '.$ya_delivery_data['message']);
+						$this->yaDeliveryReport($data);
+						return false;
+					}else{
+						return $ya_delivery_data;
+					}
+				}
+			}
+		}
+		if($type == 'cart'){
+
+		}
+	}
+
+	public function yaDeliveryRequest($url, $data){
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE));
+		curl_setopt($ch, CURLOPT_POST, 1);
+
+		$headers = array();
+		$headers[] = "Content-Type: application/json";
+		$headers[] = "Accept: application/json";
+		$headers[] = "Authorization: Bearer AQAAAABhRjNRAAVM1a9aVo-TC0-iuG7YqKTnWoA";
+		$headers[] = "Accept-Language: ru";
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+		$result = curl_exec($ch);
+		if (curl_errno($ch)) {
+			$this->modx->log(xPDO::LOG_LEVEL_ERROR,  'YA Delivery Error:' . curl_error($ch));
+		}
+		curl_close ($ch);
+
+		return json_decode($result, 1);
+	}
+
+	public function yaDeliveryReport($text){
+		$this->modx->log(xPDO::LOG_LEVEL_ERROR, print_r($text, 1), array(
+			'target' => 'FILE',
+			'options' => array(
+				'filename' => 'ya_delivery_log.log'
+			)
+		));
+	}
 }

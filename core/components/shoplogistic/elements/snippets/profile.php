@@ -17,37 +17,41 @@ if($id){
 	$criteria = array(
 		"user_id" => $id
 	);
-	$whs = $modx->getCollection("slWarehouseUsers", $criteria);
-	if($whs){
-		$whsids = array();
-		foreach($whs as $wh){
-			$whsids[] = $wh->get("warehouse_id");
-		}
-		$cr = array(
-			'id:IN' =>  $whsids,
-			'active' => 1
-		);
-		$warehouses = $modx->getCollection("slWarehouse", $cr);
-		if($warehouses){
-			foreach($warehouses as $warehouse){
-				$out['warehouses'][] = $warehouse->toArray();
+	if($type != 'ss'){
+		$whs = $modx->getCollection("slWarehouseUsers", $criteria);
+		if($whs){
+			$whsids = array();
+			foreach($whs as $wh){
+				$whsids[] = $wh->get("warehouse_id");
+			}
+			$cr = array(
+				'id:IN' =>  $whsids,
+				'active' => 1
+			);
+			$warehouses = $modx->getCollection("slWarehouse", $cr);
+			if($warehouses){
+				foreach($warehouses as $warehouse){
+					$out['warehouses'][] = $warehouse->toArray();
+				}
 			}
 		}
 	}
-	$ss = $modx->getCollection("slStoreUsers", $criteria);
-	if($ss){
-		$ssids = array();
-		foreach($ss as $s){
-			$ssids[] = $s->get("store_id");
-		}
-		$cr = array(
-			'id:IN' =>  $ssids,
-			'active' => 1
-		);
-		$stores = $modx->getCollection("slStores", $cr);
-		if($stores){
-			foreach($stores as $store){
-				$out['stores'][] = $store->toArray();
+	if($type != 'wh'){
+		$ss = $modx->getCollection("slStoreUsers", $criteria);
+		if($ss){
+			$ssids = array();
+			foreach($ss as $s){
+				$ssids[] = $s->get("store_id");
+			}
+			$cr = array(
+				'id:IN' =>  $ssids,
+				'active' => 1
+			);
+			$stores = $modx->getCollection("slStores", $cr);
+			if($stores){
+				foreach($stores as $store){
+					$out['stores'][] = $store->toArray();
+				}
 			}
 		}
 	}

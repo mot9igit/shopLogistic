@@ -1,5 +1,11 @@
 Changelog for shopLogistic.
 
+0.0.7-pl
+==============
+- Add geolocation services
+- Add a any tools to Profile
+- Add link between order and store (column `store_id` in ms2_orders)
+
 0.0.6-pl
 ==============
 - Add change Stores & Warehouses data requests
