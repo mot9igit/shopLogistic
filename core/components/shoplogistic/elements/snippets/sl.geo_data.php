@@ -1,4 +1,7 @@
 <?php
+$tpl = $modx->getOption('tpl', $scriptProperties, 'sl.geodata');
+$modal_tpl = $modx->getOption('modal_tpl', $scriptProperties, 'sl.geomodal');
+
 $corePath = $modx->getOption('shoplogistic_core_path', array(), $modx->getOption('core_path') . 'components/shoplogistic/');
 $shopLogistic = $modx->getService('shopLogistic', 'shopLogistic', $corePath . 'model/');
 if (!$shopLogistic) {
@@ -9,13 +12,14 @@ if (!$modx->loadClass('pdofetch', MODX_CORE_PATH . 'components/pdotools/model/pd
 	return false;
 }
 $pdoFetch = new pdoFetch($modx, $scriptProperties);
-$out = array();
+$data = array();
 
-$stores = $shopLogistic->get_nearby('slStores', array($_SESSION['sl_location']['data']['geo_lat'], $_SESSION['sl_location']['data']['geo_lon']), 9999);
-
-foreach($stores as $store){
-	$out['stores'][] =  $store;
+if(isset($_SESSION['sl_location'])){
+	$data = $_SESSION['sl_location']['pls'];
 }
 
-$output = $pdoFetch->getChunk($tpl, $out);
-return $output;
+$output = $pdoFetch->getChunk($tpl, $data);
+$modal = $pdoFetch->getChunk($modal_tpl, $data);
+$modx->regClientHTMLBlock($modal);
+
+echo $output;

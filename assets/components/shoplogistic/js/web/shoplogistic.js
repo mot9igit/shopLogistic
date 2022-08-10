@@ -9,7 +9,8 @@ var sl_delivery = {
         service: ".sl-services input",
         map: '.service-map',
         pvz: '.sl_pvz',
-        choosed_pvz: '.choosed_data'
+        choosed_pvz: '.choosed_data',
+        yandex: '.yandex_delivery'
     },
     initialize: function(){
         // handlers event
@@ -129,6 +130,7 @@ var sl_delivery = {
         }
     },
     update_price: function(){
+		miniShop2.Order.getcost();
         var fias = $(sl_delivery.options.hidden_address).find("input[name=fias]").val();
         if(fias){
             sl_delivery.getDeliveryPrices(fias);
@@ -139,24 +141,28 @@ var sl_delivery = {
         if (d == shoplogisticConfig['default_delivery']) {
             $(sl_delivery.options.deliveries).hide();
             $(sl_delivery.options.del_wrap).hide();
+            $(sl_delivery.options.yandex).find('input').attr("disabled", "disabled");
             $(sl_delivery.options.map).removeClass("active");
             $(sl_delivery.options.services).removeClass('active');
         }
         if(d == shoplogisticConfig['punkt_delivery']){
             $(sl_delivery.options.deliveries).show();
             $(sl_delivery.options.del_wrap).show();
+            $(sl_delivery.options.yandex).find('input').attr("disabled", "disabled");
             $(sl_delivery.options.map).removeClass("active");
             //$(sl_delivery.options.services).show();
         }
         if(d == shoplogisticConfig['curier_delivery']){
             $(sl_delivery.options.deliveries).show();
             $(sl_delivery.options.del_wrap).show();
+            $(sl_delivery.options.yandex).find('input').removeAttr("disabled");
             $(sl_delivery.options.map).removeClass("active");
             //$(sl_delivery.options.services).show();
         }
         if(d == shoplogisticConfig['post_delivery']){
             $(sl_delivery.options.deliveries).show();
             $(sl_delivery.options.del_wrap).show();
+            $(sl_delivery.options.yandex).find('input').attr("disabled", "disabled");
             $(sl_delivery.options.map).removeClass("active");
             $(sl_delivery.options.services).removeClass('active');
         }
@@ -173,6 +179,10 @@ var sl_delivery = {
         }
     },
     getDeliveryPrice: async function(fias, service){
+		$('.'+service+'_price').text('');
+        $('.'+service+'_srok').text('');
+		$('.'+service+'_price').closest('.service_info_'+service).hide();
+		$('.'+service+'_srok').closest('.visual_block').addClass('loading');
         var data = {
             sl_action: 'delivery/get_price',
             fias: fias,
@@ -197,15 +207,18 @@ var sl_delivery = {
                 $('.'+data.main_key+'_srok').text(srok);
                 $('.'+data.main_key+'_price').closest('.service_info_'+data.main_key).show();
                 $('input#service_'+data.main_key).removeAttr("disabled");
+				$('.'+data.main_key+'_price').closest('.visual_block').removeClass('loading');
             }else{
                 $('input#service_'+data.main_key).attr("disabled", "disabled");
                 $('input#service_'+data.main_key).removeAttr("checked");
                 $('input#service_'+data.main_key).prop('checked', false);
+				$('.'+data.main_key+'_price').closest('.visual_block').removeClass('loading');
             }
         }else{
             $('input#service_'+data.main_key).attr("disabled", "disabled");
             $('input#service_'+data.main_key).removeAttr("checked");
             $('input#service_'+data.main_key).prop('checked', false);
+			$('.'+data.main_key+'_price').closest('.visual_block').removeClass('loading');
         }
         $("input[name=sl_service][value="+data.main_key+"]").data("data", JSON.stringify(data));
         if($("input[name=sl_service][value="+data.main_key+"]").prop("checked")){
@@ -226,7 +239,7 @@ var sl_delivery = {
             setTimeout(function() {
                 sl_delivery.send(data);
             }, 100);
-
+			
             if(prop == 'terminal' && save_data.service[save_data.service.main_key].price.hasOwnProperty(prop) && save_data.service.main_key != "postrf"){
                 $(sl_delivery.options.map).addClass("active");
                 sl_delivery.setMap(save_data.service[save_data.service.main_key].price.terminals);
@@ -318,8 +331,23 @@ var sl_marketplace = {
         alert_change_btn: '.alert_change_btn',
         geo_close: '.sl_city_close',
         geo_more: '.sl_city_more_info',
+        geo_city: '.sl_geo_city',
+        geo_store: '.sl_geo_store'
     },
     initialize: function () {
+        var action = 'city/status';
+        var data = {
+            sl_action: action
+        };
+        sl_marketplace.send(data);
+        if($('.delivery_data').length){
+            var action = 'get/delivery';
+            var data = {
+                sl_action: action,
+                id: $('.delivery_data').data('id')
+            };
+            sl_marketplace.send(data);
+        }
         $(document).on("click", sl_marketplace.options.generate_api, function(e) {
             e.preventDefault();
             var type = $(this).data('type');
@@ -353,6 +381,7 @@ var sl_marketplace = {
             };
             sl_marketplace.send(data);
         });
+        /*
         $(document).on("click", sl_marketplace.options.geo_close, function(e) {
             e.preventDefault();
             var action = 'city/accept';
@@ -360,6 +389,10 @@ var sl_marketplace = {
                 sl_action: action
             };
             sl_marketplace.send(data);
+        });
+        */
+        $(document).on('change', '.change_status select', function(e){
+            $(this).closest(sl_marketplace.options.live_form).trigger('submit');
         });
         $(document).on("click", sl_marketplace.options.geo_more, function(e) {
             e.preventDefault();
@@ -445,8 +478,10 @@ var sl_marketplace = {
             var month = $(this).data("month");
             var year = $(this).data("year");
             var action = 'calendar/get';
+            var warehouse_id = $(this).closest(".calendar").data("warehouse_id");
             var data = {
                 sl_action: action,
+                col_id: warehouse_id,
                 month: month,
                 year: year
             };
@@ -531,9 +566,30 @@ var sl_marketplace = {
             dataType: 'json',
             data: data,
             success:  function(data_r) {
+                if(data_r.data.hasOwnProperty('html_delivery')){
+                    if(data_r.data.html_delivery){
+                        $('.delivery_data').html(data_r.data.html_delivery);
+                    }
+                }
+                if(data_r.data.hasOwnProperty('pls')){
+                    if(data_r.data.pls.citycheck == 1){
+                        $(sl_marketplace.options.geo_city).text(data_r.data.pls.city);
+                        $(sl_marketplace.options.geo_store).text(data_r.data.pls.store);
+                        $('.sl_city_close').attr("data-data", JSON.stringify(data_r.data.location));
+                        $(".city_popup").addClass('active');
+                    }
+                }
                 if(typeof data_r.data.reload !== "undefined"){
                     if(data_r.data.reload) {
                         document.location.reload();
+                    }
+                }
+                if(typeof data_r.data.showSuccessModal !== "undefined"){
+                    if(data_r.data.showSuccessModal) {
+                        var successModal = new bootstrap.Modal(document.getElementById('success_modal'));
+                        $("#success_modal").find(".modal_success .text .title").text(data_r.data.ms2_response);
+                        $(".modal.show .btn-close").trigger("click");
+                        successModal.show();
                     }
                 }
                 if(typeof data_r.data.apikey !== "undefined"){
@@ -630,7 +686,81 @@ $(document).ready(function(){
     // ms2 pseudo submit
     $(".pseudo_submit").click(function(e) {
         e.preventDefault();
-        $(this).attr("disabled");
-        $("#msOrder .ms2_link").trigger("click");
+		// check validation
+		$('.error-desc').remove();
+		$('.form_input_group').removeClass('error');
+		var errors = {};
+		var d = $('input[type=radio][name=delivery]:checked').val();
+		var required = ['receiver','email','phone'];
+		required.forEach((element) => {
+			var val = $('#msOrder #'+element).val();
+			if(val == ''){
+				errors[element] = 'Заполните это поле.';
+			}else{
+				if(element == 'email'){
+					var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$/;
+					if(reg.test(val) == false) {
+						errors[element] = 'Напишите корректный email.';
+					}
+				}
+				if(element == 'phone'){
+					var reg = /^[\d\+][\d\(\)\ -]{4,14}\d$/;
+					if(reg.test(val) == false) {
+						errors[element] = 'Напишите корректный телефон.';
+					}
+				}
+			}
+		});
+		if(d == shoplogisticConfig['curier_delivery']){
+			var required = ['address', 'index','region','city','street','building'];
+			required.forEach((element) => {
+				var val = $('#msOrder #'+element).val();
+				if(val == ''){
+					errors['address'] = 'Укажите адрес полностью, включая квартиру, если это необходимо.';
+				}
+			});		
+			// отдельно проверяем 'sl_service'
+			var service = $('input[type=radio][name=sl_service]:checked').val();
+			if(!service){
+				errors['sl-services'] = 'Укажите транспортную компанию для доставки.';
+			}
+		}
+		if(d == shoplogisticConfig['punkt_delivery']){
+			var required = ['address', 'index','region','city','street','building'];
+			required.forEach((element) => {
+				var val = $('#msOrder #'+element).val();
+				if(val == ''){
+					errors['address'] = 'Укажите адрес включая дом для более точного расчета стоимости доставки.';
+				}
+			});		
+			// отдельно проверяем 'sl_service'
+			var service = $('input[type=radio][name=sl_service]:checked').val();
+			if(!service){
+				errors['sl-services'] = 'Укажите транспортную компанию для доставки.';
+			}
+			var pvz = $('.sl_pvz').text();
+			if(pvz == ''){
+				errors['service-map'] = 'Выберите удобный пункт выдачи заказов на карте.';
+			}
+		}
+		if(Object.keys(errors).length){
+			for (const [key, value] of Object.entries(errors)) {
+				var error_string = "<div class='sl-alert sl-alert-error'>"+value+"</div>";
+				if(key == 'sl-services' || key == 'service-map'){
+					$('.'+key).prepend(error_string);
+				}else{
+					var error_string = "<span class='error-desc'>"+value+"</span>";
+					$('#'+key).closest('.form_input_group').addClass('error').append(error_string);
+				}
+			}
+			$('.summary_title_block').append("<div class='sl-alert sl-alert-error'>Проверьте форму на наличие ошибок.</div>")
+		}else{
+			$('body').addClass("sl_noscroll");  
+			$('body').addClass('loading');
+			if(!$(this).attr("disabled")){
+				$(this).attr("disabled", "disabled");
+				$("#msOrder .ms2_link").trigger("click");
+			}
+		}
     });
 })

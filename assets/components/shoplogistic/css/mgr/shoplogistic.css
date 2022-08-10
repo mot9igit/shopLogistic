@@ -7,7 +7,14 @@
 .no-margin{
     margin: 0 !important;
 }
-
+.x-color-palette{
+    width: 100%;
+}
+.shoplogistic-row-badge {
+    padding: 4px 10px;
+    border-radius: 3px;
+    background-color: #cacaca;
+}
 /* Actions */
 .action-red { color: darkred !important; }
 .action-green { color: darkgreen !important; }

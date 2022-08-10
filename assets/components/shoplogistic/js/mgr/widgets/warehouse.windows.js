@@ -99,6 +99,13 @@ Ext.extend(shopLogistic.window.CreateWarehouse, shopLogistic.window.Default, {
                     name: 'website',
                     id: config.id + '-website',
                     anchor: '99%'
+                },{
+                    xtype: 'shoplogistic-combo-store',
+                    fieldLabel: _('shoplogistic_warehousestores_warehouse_store'),
+                    name: 'warehouse_store',
+                    anchor: '99%',
+                    id: config.id + '-warehouse_store',
+                    allowBlank: false
                 },]
             },{
                 columnWidth: .5,
@@ -110,6 +117,14 @@ Ext.extend(shopLogistic.window.CreateWarehouse, shopLogistic.window.Default, {
                     name: 'city',
                     id: config.id + '-city',
                     anchor: '99%'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: _('shoplogistic_btx24_id'),
+                    emptyText: _('shoplogistic_btx24_id_placeholder'),
+                    name: 'btx24_id',
+                    id: config.id + '-btx24_id',
+                    anchor: '99%',
+                    allowBlank: true,
                 }]
             }]
         },{

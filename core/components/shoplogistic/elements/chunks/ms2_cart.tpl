@@ -44,6 +44,7 @@
                                 <span class="article">{$product.article}</span>
                             {/if}
                             <a href="{$product.id | url}" class="name">{$product.pagetitle | htmlent}</a>
+                            <!-- <span class="name">{$product.pagetitle | htmlent}</span> -->
                             {if $product.options?}
                                 {foreach $product.options as $key => $option}
                                     {if $key in ['modification','modifications','msal']}{continue}{/if}

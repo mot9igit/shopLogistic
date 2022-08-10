@@ -76,9 +76,11 @@
                                 <div class="summary-summation__total"><span id="ms2_order_cost">{$total.cost?:0}</span>&thinsp;₽</div>
                             </li>
                         </ul>
+                        <!--
                         <div class="text-center">
                             <button type="button" data-toggle="modal" data-target="#callback" class="sl-btn sl-btn-text texter"> <i class="fa fa-phone"></i> Уточнить по телефону</button>
                         </div>
+                        -->
                     </div>
                 </div>
             </div>

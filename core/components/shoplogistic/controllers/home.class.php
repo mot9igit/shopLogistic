@@ -65,6 +65,8 @@ class shopLogisticHomeManagerController extends modExtraManagerController
 		$this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/widgets/storeusers.windows.js?v='.$this->shopLogistic->config['version']);
 		$this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/widgets/storeremains.grid.js?v='.$this->shopLogistic->config['version']);
 		$this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/widgets/storeremains.windows.js?v='.$this->shopLogistic->config['version']);
+		$this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/widgets/storebalance.grid.js?v='.$this->shopLogistic->config['version']);
+		$this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/widgets/storebalance.windows.js?v='.$this->shopLogistic->config['version']);
 		$this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/widgets/warehouse.grid.js?v='.$this->shopLogistic->config['version']);
 		$this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/widgets/warehouse.windows.js?v='.$this->shopLogistic->config['version']);
 		$this->addJavascript($this->shopLogistic->config['jsUrl'] . 'mgr/widgets/warehouseremains.grid.js?v='.$this->shopLogistic->config['version']);

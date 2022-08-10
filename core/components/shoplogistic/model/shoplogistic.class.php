@@ -21,7 +21,7 @@ class shopLogistic
 			'corePath' => $corePath,
 			'modelPath' => $corePath . 'model/',
 			'processorsPath' => $corePath . 'processors/',
-			'version' => '0.0.7',
+			'version' => '0.0.8',
 
 			'connectorUrl' => $assetsUrl . 'connector.php',
 			'actionUrl' => $assetsUrl . 'action.php',
@@ -61,10 +61,10 @@ class shopLogistic
 		$this->modx->lexicon->load('shoplogistic:default');
 
 		if ($ctx != 'mgr' && (!defined('MODX_API_MODE') || !MODX_API_MODE) && !$this->config['json_response']) {
-			$config = $this->pdoTools->makePlaceholders($this->config);
+			$config = $this->pdoTools->makePlaceholders($this->config); 
 			// dadata css
-			$this->modx->regClientCSS("https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css");
-			$this->modx->regClientScript("https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js");
+			//$this->modx->regClientCSS("");
+			//$this->modx->regClientScript("");
 
 			// Register CSS
 			$css = trim($this->modx->getOption('shoplogistic_frontend_css'));
@@ -110,29 +110,63 @@ class shopLogistic
 		$load = $this->loadServices($ctx);
 		$this->initialized[$ctx] = $load;
 
+		// init city
+		// $this->modx->log(1, print_r($_SESSION['sl_location'], 1));
+		if(isset($_SESSION['sl_location'])) {
+			$this->modx->setPlaceholders($_SESSION['sl_location']['pls'], 'sl.');
+			$this->modx->setPlaceholders($_SESSION['sl_location']['store'], 'store.');
+			$products = $this->getProductsAvailable();
+			$this->modx->setPlaceholder('sl.resources_avaible', implode(",", $products));
+			$this->modx->setPlaceholders($_SESSION['sl_location']['pls'], 'sl.');
+		}
 		// init shoplogistic
 		$this->esl = new eShopLogistic($this, $this->modx);
 		$this->esl->init();
 
-		// init city
-		// $this->modx->log(1, print_r($_SESSION['sl_location'], 1));
-		$location = $this->getLoocationByIP();
-		$store = $this->get_nearby('slStores', array($location['location']['data']['geo_lat'], $location['location']['data']['geo_lon']));
-		// $this->modx->log(1, print_r($store, 1));
-		if(empty($_SESSION['sl_location'])){
-			$_SESSION['sl_location'] = $location;
-			$_SESSION['sl_location']['store'] = $store[0];
-			$_SESSION['sl_location']['pls'] = array(
-				'citycheck' => 1,
-				'city' => $location['location']['value'],
-				'store' => $store[0]['name']
-			);
-		}
-		// $this->modx->log(1, print_r($_SESSION['sl_location'], 1));
-		$this->modx->setPlaceholders($_SESSION['sl_location']['pls'], 'sl.');
-		$this->modx->setPlaceholders($_SESSION['sl_location']['store'], 'store.');
-
 		return $load;
+	}
+
+	public function getProductsAvailable(){
+		if(isset($_SESSION['sl_location'])){
+			$store_id = $_SESSION['sl_location']['store']['id'];
+			$products = array();
+			// берем товары магазина
+			$query = $this->modx->newQuery('slStoresRemains');
+			$query->select('slStoresRemains.product_id', 'slWarehouseStores.warehouse_id');
+			$query->leftJoin('slWarehouseStores','slWarehouseStores', array(
+				'`slWarehouseStores`.`store_id` = `slStoresRemains`.`store_id`'
+			));
+			$query->where(array(
+				"slStoresRemains.store_id:=" => $store_id,
+			));
+			$query->limit(0);
+			if ($query->prepare() && $query->stmt->execute()) {
+				$result = $query->stmt->fetchAll(PDO::FETCH_ASSOC);
+				foreach ($result as $row) {
+					$products[] = $row['product_id'];
+				}
+			}
+			// запрос товаров дистрибьютора
+			$query = $this->modx->newQuery('slWarehouseStores');
+			$query->leftJoin('slWarehouseRemains', 'slWarehouseRemains', "slWarehouseRemains.warehouse_id = slWarehouseStores.warehouse_id");
+			$query->select('slWarehouseRemains.product_id');
+			$query->where(array(
+				"slWarehouseStores.store_id:=" => $store_id,
+			));
+			$query->limit(0);
+
+			// если запрос подготовлен и выполнен
+			if ($query->prepare() && $query->stmt->execute()) {
+				$result = $query->stmt->fetchAll(PDO::FETCH_ASSOC);
+
+				foreach ($result as $row) {
+					$products[] = $row['product_id'];
+				}
+
+			}
+			$products = array_unique($products);
+			return $products;
+		}
 	}
 
 	/**
@@ -190,64 +224,120 @@ class shopLogistic
 				break;
 			case 'delivery/get_price':
 				$s = $data['service'];
+				$offset = $this->getDeliveryDateOffset("cart");
 				if ($data['fias']) {
 					$data = array(
 						"target" => $data['fias']
 					);
 					$this->esl = new eShopLogistic($this, $this->modx);
 					$init = $this->esl->init();
-					$resp = $this->esl->query("search", $data);
-					//$this->modx->log(1, print_r($resp, 1));
-					$services = array();
-					foreach ($init['data']['services'] as $key => $val) {
-						$tmp = array(
-							"name" => $val["name"],
-							"from" => $val["city_code"],
-							"to" => $resp["data"][0]["services"][$key],
-							"logo" => $val["logo"]
+					$our_services = array('postrf', 'yandex');					
+					if (in_array($s, $our_services)) {
+						if($s == 'yandex'){
+							//$this->modx->log(1, print_r($data, 1));
+							$res = $this->getLocationData($data['target']);
+							if($offset){
+								$days = $this->decl($offset, "день|дня|дней", true);
+							}else{
+								$days = "сегодня";
+							}
+							$data['location'] = $res['suggestions'][0];
+							$ya_data = $this->esl->getYaDeliveryPrice('cart', 0, $data);
+							
+							if(isset($ya_data['price'])){
+								$services['yandex'] = array(
+									"price" => array(
+										"door" => array(
+											"price" => $ya_data['price'],
+											"time" => $days
+										)
+									)
+								);
+							}else{
+								$services['yandex'] = false;
+							}
+						}
+						if($s == 'postrf'){							
+							$res = $this->getLocationData($data['target']);
+							$this->modx->log(1, print_r($res, 1));
+							if($res['suggestions'][0]){
+								// считаем стоимость доставки почтой России
+								$city = $this->modx->getObject('slCityCity', $_SESSION['sl_location']['store']['city']);
+								if($city){
+									$c = $city->toArray();
+									$services = $this->esl->getPostRfPrice('cart', $res['suggestions'][0]['data']['postal_code'], $c['properties']['data']['postal_code']);
+									$this->modx->log(1, print_r($services, 1));
+								}
+							}
+						}
+					}else {
+						$resp = $this->esl->query("search", $data);
+						//$this->modx->log(1, print_r($resp, 1));
+						$services = array();
+						foreach ($init['data']['services'] as $key => $val) {
+							$tmp = array(
+								"name" => $val["name"],
+								"from" => $val["city_code"],
+								"to" => $resp["data"][0]["services"][$key],
+								"logo" => $val["logo"]
+							);
+							$services[$key] = $tmp;
+						}
+
+						// TODO: link weight and demensions: parameter OFFERS
+						$data = array(
+							"from" => $services[$s]['from'],
+							"to" => $services[$s]['to'],
 						);
-						$services[$key] = $tmp;
-					}
 
-					// TODO: link weight and demensions: parameter OFFERS
-					$data = array(
-						"from" => $services[$s]['from'],
-						"to" => $services[$s]['to'],
-					);
-
-					$offers = array();
-					if ($this->ms2) {
-						$cart = $this->ms2->cart->get();
-						foreach ($cart as $product) {
-							if ($product['places']) {
-								foreach ($product['places'] as $key => $val) {
-									$offers[$product['id'] . '_' . $key] = [
+						$offers = array();
+						if ($this->ms2) {
+							$cart = $this->ms2->cart->get();
+							foreach ($cart as $product) {
+								if ($product['places']) {
+									foreach ($product['places'] as $key => $val) {
+										$offers[$product['id'] . '_' . $key] = [
+											'article' => $product['id'],
+											'name' => $product['id'],
+											'count' => $product['count'],
+											'price' => $product['price'],
+											'weight' => $val['weight'],
+											'dimensions' => $val['dimensions'] ?: ''
+										];
+									}
+								} else {
+									$offers[$product['id']] = [
 										'article' => $product['id'],
 										'name' => $product['id'],
 										'count' => $product['count'],
 										'price' => $product['price'],
-										'weight' => $val['weight'],
-										'dimensions' => $val['dimensions'] ?: ''
+										'weight' => $product['weight'],
+										'dimensions' => $product['dimensions'] ?: ''
 									];
 								}
-							} else {
-								$offers[$product['id']] = [
-									'article' => $product['id'],
-									'name' => $product['id'],
-									'count' => $product['count'],
-									'price' => $product['price'],
-									'weight' => $product['weight'],
-									'dimensions' => $product['dimensions'] ?: ''
-								];
 							}
 						}
+
+						$data['offers'] = json_encode($offers);
+						// change city FROM
+						if (isset($_SESSION['sl_location']['store'])) {
+							$city = $this->modx->getObject("slCityCity", $_SESSION['sl_location']['store']['city']);
+							if ($city) {
+								$data['from'] = '#' . $city->get("fias_id");
+							}
+						}
+						//$this->modx->log(1, print_r($data,1));
+						$resp = $this->esl->query("delivery/" . $s, $data);
+						$types = array('terminal','door');
+						foreach($types as $type){
+							$d = explode("-", $resp['data'][$type]['time']);
+							$days = (int) preg_replace('/[^0-9]/', '', $d[0]) + 1 + $offset;
+							$resp['data'][$type]['time'] = $this->decl($days, "день|дня|дней", true);
+						}
+						//$date = $resp['data']['']
+						$services[$s]["price"] = $resp['data'];
 					}
-
-					$data['offers'] = json_encode($offers);
-
-					$resp = $this->esl->query("delivery/" . $s, $data);
-					//$this->modx->log(1, print_r($resp,1));
-					$services[$s]["price"] = $resp['data'];
+					
 					$services['main_key'] = $s;
 					$response = $services;
 				}
@@ -282,6 +372,9 @@ class shopLogistic
 			case 'get/stores':
 				$response = $this->getStores($data);
 				break;
+			case 'city/status':
+				$response = $this->getCityStatus($data);
+				break;
 			case 'city/check':
 				$response = $this->checkCity($data);
 				break;
@@ -291,8 +384,231 @@ class shopLogistic
 			case 'store/check':
 				$response = $this->checkStore($data);
 				break;
+			case 'status/change':
+				$response = $this->changeStatus($data);
+				break;
+			case 'shipment/add':
+				$response = $this->addShipment($data);
+				break;
+			case 'get/delivery':
+				$response = $this->getDelivery($data);
+				break;
 		}
 		return $response;
+	}
+	
+	public function getLocationData($fias){
+		$token = $this->modx->getOption("shoplogistic_api_key_dadata");
+		$ch = curl_init('https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/address');
+		$dt = array(
+			"query" => $fias
+		);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($dt, JSON_UNESCAPED_UNICODE));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			'Authorization: Token '.$token,
+			'Content-Type: application/json',
+			'Accept: application/json'
+		));
+		$res = curl_exec($ch);
+		curl_close($ch);
+		$res = json_decode($res, true);
+		return $res;
+	}
+
+	public function decl($amount, $variants, $number = false, $delimiter = '|') {
+		$variants = explode($delimiter, $variants);
+		if (count($variants) < 2) {
+			$variants = array_fill(0, 3, $variants[0]);
+		} elseif (count($variants) < 3) {
+		$variants[2] = $variants[1];
+		}
+		$modulusOneHundred = $amount % 100;
+		switch ($amount % 10) {
+			case 1:
+				$text = $modulusOneHundred == 11
+					? $variants[2]
+					: $variants[0];
+				break;
+			case 2:
+			case 3:
+			case 4:
+				$text = ($modulusOneHundred > 10) && ($modulusOneHundred < 20)
+					? $variants[2]
+					: $variants[1];
+				break;
+			default:
+				$text = $variants[2];
+		}
+
+		return $number
+			? $amount . ' ' . $text
+			: $text;
+	}
+
+	public function getDeliveryDateOffset($mode, $id = 0){
+		$offset = 0;
+		$this->loadServices();
+		//$this->modx->log(1, $mode.' '.$id);
+		if($mode == 'cart'){
+			$cart = $this->ms2->cart->get();
+			foreach ($cart as $product) {
+				$id = $product['id'];
+				$remains = $this->modx->getObject("slStoresRemains", array("product_id" => $id, "store_id" => $_SESSION['sl_location']['store']['id']));
+				if (!$remains) {
+					// если нет в наличии проверяем ближайшую отгрузку +1 день
+					$query = $this->modx->newQuery("slWarehouseShipment");
+					$query->where(array(
+						"date:>=" => date('Y-m-d H:i:s'),
+						"FIND_IN_SET({$_SESSION['sl_location']['store']['id']}, store_ids) > 0"
+					));
+					$query->sortby('date', 'ASC');
+					$obj = $this->modx->getObject("slWarehouseShipment", $query);
+					if ($obj) {
+						$nowDate = new DateTime();
+						$newDate = new DateTime($obj->get('date'));
+						$newDate->add(new DateInterval('P1D'));
+						$interval = $nowDate->diff($newDate);
+						$offset = $interval->format('%a');
+					}
+				}
+			}
+		}
+		if($mode == 'card'){
+			
+			$remains = $this->modx->getObject("slStoresRemains", array("product_id" => $id, "store_id" => $_SESSION['sl_location']['store']['id']));
+			if (!$remains) {
+				// если нет в наличии проверяем ближайшую отгрузку +1 день
+				$query = $this->modx->newQuery("slWarehouseShipment");
+				$query->where(array(
+					"date:>=" => date('Y-m-d H:i:s'),
+					"FIND_IN_SET({$_SESSION['sl_location']['store']['id']}, store_ids) > 0"
+				));
+				$query->sortby('date', 'ASC');
+				//$query->prepare();
+				//$this->modx->log(1, $query->toSQL());
+				$obj = $this->modx->getObject("slWarehouseShipment", $query);
+				if ($obj) {
+					$nowDate = new DateTime();
+					$newDate = new DateTime($obj->get('date'));
+					$newDate->add(new DateInterval('P1D'));
+					$interval = $nowDate->diff($newDate);
+					$offset = $interval->format('%a');
+				}
+			}
+		}
+		return $offset;
+	}
+
+	public function getDelivery($data){
+		$output = '';
+		if($data['id']){
+			$output = $this->modx->runSnippet("sl.get_delivery_data", array("id" => $data["id"], "tpl" => "@FILE chunks/sl_delivery_data.tpl"));
+			//$output = $this->pdoTools->getChunk("@FILE chunks/sl_delivery_data.tpl", ["id" => $data["id"]]);
+		}
+		return $this->success("", array("html_delivery" => $output));
+	}
+
+	public function getCityStatus(){
+		$citycheck = 0;
+		if(isset($_SESSION['sl_location']['pls']['citycheck'])){
+			if($_SESSION['sl_location']['pls']['citycheck']){
+				$citycheck = 1;
+			}
+		}
+		if(empty($_SESSION['sl_location']) || $citycheck){
+			$location = $this->getLoocationByIP();
+			$store = $this->get_nearby('slStores', array($location['location']['data']['geo_lat'], $location['location']['data']['geo_lon']));
+			$border = $this->modx->getOption("shoplogistic_km");
+			if($store[0]['distance'] <= $border){
+				// check this city
+			}
+			//$this->modx->log(1, print_r($location, 1));
+			//$this->modx->log(1, print_r($store, 1));
+			$_SESSION['sl_location'] = $location;
+			$_SESSION['sl_location']['store'] = $store[0];
+			$_SESSION['sl_location']['pls'] = array(
+				'citycheck' => 1,
+				'city' => $location['location']['value'],
+				'store' => $store[0]['name']
+			);
+		}
+		return $this->success("", $_SESSION['sl_location']);
+	}
+
+	public function addShipment($data){
+		if(count($data['d'])){
+			if($data['id']){
+				$shipment = $this->modx->getObject("slWarehouseShipment", $data['id']);
+			}else{
+				$shipment = $this->modx->newObject("slWarehouseShipment");
+			}
+			if($shipment){
+				$shipment->set("warehouse_id", $data['warehouse_id']);
+				$shipment->set("date", date("Y-m-d H:i:s", $data['date']));
+				$shipment->set("createdon", strftime('%Y-%m-%d %H:%M:%S'));
+				$shipment->set("store_ids", implode(",", $data['d']));
+				$shipment->set("description", $data['description']);
+				$shipment->save();
+				$response = array(
+					"success" => true,
+					"data" => array(
+						"showSuccessModal" => true,
+						'ms2_response' => "Запись в отгрузках успешно создана."
+					)
+				);
+			}else{
+				$response = array(
+					"success" => false
+				);
+			}
+		}else{
+			$response = array(
+				"success" => false
+			);
+		}
+		return $response;
+	}
+
+	public function changeStatus($data){
+		if($data['order_id']){
+			$this->loadServices();
+			$response = array(
+				"success" => true,
+				"data" => array(
+					"showSuccessModal" => true
+				)
+			);
+			$response['data']['ms2_response'] = $this->ms2->changeOrderStatus($data['order_id'], $data['status']);
+			if($response['data']['ms2_response'] == 1){
+				$response['data']['ms2_response'] = "Статус заказа успешно изменен.";
+			}
+			return $response;
+		}
+	}
+
+	public function getBalance(){
+		$user = $this->modx->getUser();
+		$balance = 0;
+		if($user->get('id')){
+			// собираем баланс по всем магазинам
+			$stores = $this->modx->getCollection("slStoreUsers", array("user_id" => $user->get('id')));
+			$strs = array();
+			foreach($stores as $store){
+				//$strs[] = $store->get("store_id");
+			}
+			if($_GET['col_id']){
+				$strs[] = $_GET['col_id'];
+			}
+			if(count($strs)){
+				$bls = $this->modx->getCollection("slStores", array("id:IN" => $strs));
+				foreach($bls as $bl){
+					$balance += (float) $bl->get("balance");
+				}
+			}
+		}
+		return $balance;
 	}
 
 	public function setShopCity($data){
@@ -310,7 +626,8 @@ class shopLogistic
 			"calendar" => 1
 		);
 		$output['data']['html'] = $this->modx->runSnippet("sl.calendar", array(
-			"tpl" => "@FILE chunks/sl_calendar.tpl"
+			"tpl" => "@FILE chunks/sl_calendar.tpl",
+			"dateSource" => 'date'
 		));
 		return $output;
 	}
@@ -564,8 +881,9 @@ class shopLogistic
 			   sin(radians({$lat})) * 
 			   sin(radians(lat)))
 			) AS distance 
-			FROM {$this->modx->getTableName($type)} ORDER BY distance LIMIT {$limit}";
+			FROM {$this->modx->getTableName($type)} WHERE `active` = 1 ORDER BY distance LIMIT {$limit} ";
 		$statement = $this->modx->prepare($sql);
+		//$this->modx->log(1, $sql);
 		if ( $statement->execute()) {
 			$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 			return $result;
@@ -616,25 +934,6 @@ class shopLogistic
 		$response = $this->modx->getObject('slWarehouse', ['id' => $warehouse_id]);
 
 		return $response->name;
-	}
-
-	public function detectUserRegion($coords = array(), $checked = false){
-		$ctx = $this->modx->context->key;
-		if(!isset($_SESSION[$ctx]['location'])){
-			if (count($coords)){
-				$geo = $coords;
-			}else{
-				$arr = $this->getLoocationByIP();
-				$geo = array($arr['location']['data']['geo_lat'], $arr['location']['data']['geo_lon']);
-			}
-			$arr = $this->get_nearby('slStores', $geo, 1);
-			$border = $this->modx->getOption("shoplogistic_km");
-			if($arr[0]['distance'] <= $border){
-				// check this city
-			}
-		}else{
-			return $_SESSION[$ctx]['location'];
-		}
 	}
 
 	public function getLoocationByIP(){
@@ -779,7 +1078,7 @@ class shopLogistic
 		$data = $dt['suggestions'][0];
 		$this->modx->log(1, print_r($data, 1));
 		$store = $this->get_nearby('slStores', array($data['data']['geo_lat'], $data['data']['geo_lon']));
-		$_SESSION['sl_location'] = $data;
+		$_SESSION['sl_location']['location'] = $data;
 		$_SESSION['sl_location']['store'] = $store[0];
 		$_SESSION['sl_location']['pls'] = array(
 			'citycheck' => 0,
@@ -874,6 +1173,74 @@ class shopLogistic
 	}
 
 	/**
+	 * Вычисляем ближайший магазин откуда будет доставка
+	 * @param int $product_id
+	 * @return mixed
+	 */
+	public function getObjectDelivery($product_id, $lat = 0, $lng = 0){
+		/* выходной массив
+			'product_id' - ID товара
+			'type' => 0 - не найдено ничего, следовательно ошибка системы -> alert в телеграм
+				   => 1 - есть в наличии в ближайшем магазине магазине ($_SESSION['sl_location']['store']['id'])
+				   => 2 - нет в наличии в магазине, есть в наличии у дистрибьютора магазина
+				   => 3 - есть в наличии в каком-то ближайшем магазине
+			       => 4 - отправляем из магазина по умолчанию
+			'store_id' - ID магазина,
+			'warehouse_id' - ID дистрибьютора
+		*/
+		$output = array(
+			'product_id' => $product_id,
+			'type' => 0,
+			'store_id' => 0,
+			'warehouse_id' => 0
+		);
+		// сначала проверяем есть ли в наличии в выбранном магазине
+		$remains = $this->modx->getObject("slStoresRemains", array("product_id" => $product_id, "store_id" => $_SESSION['sl_location']['store']['id']));
+		if($remains){
+			// если в наличии
+			$output['type'] = 1;
+			$output['store_id'] = $_SESSION['sl_location']['store']['id'];
+		}else{
+			// проверяем дистра, если он привязан к магазину
+			$warehouse = $this->modx->getObject("slWarehouseStores", array("store_id" => $_SESSION['sl_location']['store']['id']));
+			if($warehouse){
+				// товар есть у дистра
+				$warehouse_id = $warehouse->get('warehouse_id');
+				$remains = $this->modx->getObject("slWarehouseRemains", array("product_id" => $product_id, "warehouse_id" => $warehouse_id));
+				if($remains){
+					$output['type'] = 2;
+					$output['warehouse_id'] = $_SESSION['sl_location']['store']['id'];
+				}else{
+					// товара нет у дистра ищем ближайший АКТИВНЫЙ магазин у которого есть
+					if($lat == 0){
+						$lat = $_SESSION['sl_location']['data']['geo_lat'];
+					}
+					if($lng == 0){
+						$lng = $_SESSION['sl_location']['data']['geo_lon'];
+					}
+					$sql = "SELECT remains.*, stores.*, coordinats, (6371 * acos(cos(radians({$lat})) * cos(radians(stores.lat)) * cos(radians(stores.lng) - radians({$lng})) + sin(radians({$lat})) * sin(radians(stores.lat))) ) AS distance 
+						FROM {$this->modx->getTableName('slStoresRemains')} as remains
+						LEFT JOIN {$this->modx->getTableName('slStores')} as stores ON remains.store_id = stores.id 
+						WHERE stores.active = 1 AND remains.product_id = {$product_id} 
+						ORDER BY distance LIMIT 1";
+					$statement = $this->modx->prepare($sql);
+					if($statement->execute()) {
+						$result = $statement->fetchAll(PDO::FETCH_ASSOC);
+						if(count($result)){
+							$output['type'] = 3;
+							$output['store_id'] = $result[0]['store_id'];
+						}else{
+							$output['type'] = 4;
+							$output['store_id'] = $this->modx->getOption("shoplogistic_default_store");
+						}
+					}
+				}
+			}
+		}
+		return $output;
+	}
+
+	/**
 	 * Get city suggestion by dadata
 	 * @param array $data
 	 * @return mixed
@@ -883,11 +1250,31 @@ class shopLogistic
 		$result = array();
 		if($data['query']) {
 			$query = $this->modx->newQuery("slStores");
-			$query->where(
-				array(
-					"name:LIKE" => "%".$data['query']."%"
-				)
-			);
+			if($data['warehouse_id']){
+				$out = array();
+				$criteria = array(
+					"warehouse_id" => $data['warehouse_id']
+				);
+				$stores = $this->modx->getCollection("slWarehouseStores", $criteria);
+				foreach($stores as $store){
+					$s = $store->getOne("Store");
+					if($s){
+						$out['stores'][] = $s->get('id');
+					}
+				}
+				$query->where(
+					array(
+						"name:LIKE" => "%".$data['query']."%",
+						"AND:id:IN" => $out['stores']
+					)
+				);
+			}else{
+				$query->where(
+					array(
+						"name:LIKE" => "%".$data['query']."%",
+					)
+				);
+			}
 			$query->limit(5,0);
 			$stores = $this->modx->getCollection('slStores', $query);
 			foreach($stores as $store){
@@ -1007,6 +1394,112 @@ class shopLogistic
 		return (bool)preg_match("/^{$assetsUrl}/", $_SERVER['REQUEST_URI']);
 
 	}
+
+	/**
+	 * Function for formatting dates
+	 *
+	 * @param string $date Source date
+	 *
+	 * @return string $date Formatted date
+	 */
+	public function formatDate($date = '')
+	{
+		$df = $this->modx->getOption('ms2_date_format', null, '%d.%m.%Y %H:%M');
+
+		return (!empty($date) && $date !== '0000-00-00 00:00:00')
+			? strftime($df, strtotime($date))
+			: '&nbsp;';
+	}
+
+
+	/**
+	 * Function for price format
+	 *
+	 * @param $price
+	 *
+	 * @return int|mixed|string
+	 */
+	public function formatPrice($price = 0)
+	{
+		if (!$pf = json_decode($this->modx->getOption('ms2_price_format', null, '[2, ".", " "]'), true)) {
+			$pf = array(2, '.', ' ');
+		}
+		$price = number_format($price, $pf[0], $pf[1], $pf[2]);
+
+		if ($this->modx->getOption('ms2_price_format_no_zeros', null, true)) {
+			$tmp = explode($pf[1], $price);
+			$tmp[1] = rtrim(rtrim(@$tmp[1], '0'), '.');
+			$price = !empty($tmp[1])
+				? $tmp[0] . $pf[1] . $tmp[1]
+				: $tmp[0];
+		}
+
+		return $price;
+	}
+
+
+	/**
+	 * Function for weight format
+	 *
+	 * @param $weight
+	 *
+	 * @return int|mixed|string
+	 */
+	public function formatWeight($weight = 0)
+	{
+		if (!$wf = json_decode($this->modx->getOption('ms2_weight_format', null, '[3, ".", " "]'), true)) {
+			$wf = array(3, '.', ' ');
+		}
+		$weight = number_format($weight, $wf[0], $wf[1], $wf[2]);
+
+		if ($this->modx->getOption('ms2_weight_format_no_zeros', null, true)) {
+			$tmp = explode($wf[1], $weight);
+			$tmp[1] = rtrim(rtrim(@$tmp[1], '0'), '.');
+			$weight = !empty($tmp[1])
+				? $tmp[0] . $wf[1] . $tmp[1]
+				: $tmp[0];
+		}
+
+		return $weight;
+	}
+
+
+	/**
+	 * Shorthand for original modX::invokeEvent() method with some useful additions.
+	 *
+	 * @param $eventName
+	 * @param array $params
+	 * @param $glue
+	 *
+	 * @return array
+	 */
+	public function invokeEvent($eventName, array $params = array(), $glue = '<br/>')
+	{
+		if (isset($this->modx->event->returnedValues)) {
+			$this->modx->event->returnedValues = null;
+		}
+
+		$response = $this->modx->invokeEvent($eventName, $params);
+		if (is_array($response) && count($response) > 1) {
+			foreach ($response as $k => $v) {
+				if (empty($v)) {
+					unset($response[$k]);
+				}
+			}
+		}
+
+		$message = is_array($response) ? implode($glue, $response) : trim((string)$response);
+		if (isset($this->modx->event->returnedValues) && is_array($this->modx->event->returnedValues)) {
+			$params = array_merge($params, $this->modx->event->returnedValues);
+		}
+
+		return array(
+			'success' => empty($message),
+			'message' => $message,
+			'data' => $params,
+		);
+	}
+
 
 	/**
 	 * This method returns an error of the order

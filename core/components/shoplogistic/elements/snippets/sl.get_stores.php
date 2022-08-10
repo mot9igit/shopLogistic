@@ -11,16 +11,20 @@ if (!$modx->loadClass('pdofetch', MODX_CORE_PATH . 'components/pdotools/model/pd
 $pdoFetch = new pdoFetch($modx, $scriptProperties);
 $out = array();
 
-$cities = $modx->getCollection('slCityCity');
+$coords_data = array(
+	$_SESSION['sl_location']['location']['data']['geo_lat']? :$_SESSION['sl_location']['data']['geo_lat'],
+	$_SESSION['sl_location']['location']['data']['geo_lon']? :$_SESSION['sl_location']['data']['geo_lon']
+);
 
-foreach($cities as $city){
-	$tmp = $city->toArray();
-	$pos = array((float) $tmp['lat'], (float) $tmp['lng']);
-	$data = json_decode($shopLogistic->getGeoData($pos), 1);
-	if(count($data['suggestions'])){
-		$tmp['data'] = str_replace("{", "{ ", json_encode($data['suggestions'][0]));
+//$modx->log(1, print_r($_SESSION['sl_location'], 1));
+$stores = $shopLogistic->get_nearby('slStores', $coords_data, 9999);
+
+//$modx->log(1,print_r($stores, 1));
+
+if (is_array($stores) || is_object($stores)){
+	foreach($stores as $store){
+		$out['stores'][] =  $store;
 	}
-	$out['cities'][] =  $tmp;
 }
 
 $output = $pdoFetch->getChunk($tpl, $out);

@@ -222,6 +222,27 @@ shopLogistic.combo.company_type = function(config) {
 Ext.extend(shopLogistic.combo.company_type,MODx.combo.ComboBox);
 Ext.reg('combo-company_type',shopLogistic.combo.company_type);
 
+shopLogistic.combo.balance_type = function(config) {
+    config = config || {};
+    Ext.applyIf(config,{
+        store: new Ext.data.ArrayStore({
+            id: 0
+            ,fields: ['type', 'display']
+            ,data: [
+                ['1', 'Начисление']
+                ,['2', 'Списание']
+                ,['3', 'Информационное']
+            ]
+        })
+        ,mode: 'local'
+        ,displayField: 'display'
+        ,valueField: 'type'
+    });
+    shopLogistic.combo.balance_type.superclass.constructor.call(this,config);
+};
+Ext.extend(shopLogistic.combo.balance_type, MODx.combo.ComboBox);
+Ext.reg('combo-balance_type', shopLogistic.combo.balance_type);
+
 shopLogistic.combo.City = function (config) {
     config = config || {};
     Ext.applyIf(config, {
@@ -281,3 +302,39 @@ shopLogistic.combo.Product = function (config) {
 };
 Ext.extend(shopLogistic.combo.Product, MODx.combo.ComboBox);
 Ext.reg('shoplogistic-combo-product', shopLogistic.combo.Product);
+
+shopLogistic.combo.ms2Status = function (config) {
+    config = config || {};
+    Ext.applyIf(config, {
+        url: shopLogistic.config.connector_url,
+        baseParams: {
+            action: 'mgr/system/ms2status/getlist',
+        },
+        name: 'ms2status_id',
+        hiddenName: 'ms2status_id',
+        fields: ['id', 'name', 'description'],
+        mode: 'remote',
+        displayField: 'name',
+        fieldLabel: _('shoplogistic_ms2status_id'),
+        valueField: 'id',
+        editable: true,
+        anchor: '99%',
+        allowBlank: false,
+        autoLoad: true,
+        tpl: new Ext.XTemplate(
+            '\
+            <tpl for=".">\
+                <div class="x-combo-list-item">\
+                    <span>\
+                        <small>({id})</small>\
+                        <b>{name}</b>\
+                    </span>\
+                </div>\
+            </tpl>',
+            {compiled: true}
+        ),
+    });
+    shopLogistic.combo.ms2Status.superclass.constructor.call(this, config);
+};
+Ext.extend(shopLogistic.combo.ms2Status, MODx.combo.ComboBox);
+Ext.reg('shoplogistic-combo-ms2status', shopLogistic.combo.ms2Status);

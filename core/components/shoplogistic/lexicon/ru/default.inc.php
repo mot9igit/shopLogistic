@@ -17,6 +17,7 @@ $_lang['shoplogistic_store_ur_name'] = 'Юридическое наименов�
 $_lang['shoplogistic_store_worktime'] = 'Время работы';
 $_lang['shoplogistic_store_ogrn'] = 'ОГРН';
 $_lang['shoplogistic_store_inn'] = 'ИНН';
+$_lang['shoplogistic_store_btx24_id'] = 'ID Bitrix24';
 $_lang['shoplogistic_store_bank_number'] = 'Расчетный счет';
 $_lang['shoplogistic_store_bank_knumber'] = 'Корреспондентский счет';
 $_lang['shoplogistic_store_bank_bik'] = 'БИК';
@@ -281,6 +282,21 @@ $_lang['shoplogistic_storeremains_remove_confirm'] = 'Вы уверены, чт�
 $_lang['shoplogistic_storeremains_err_product_id'] = "Не заполнен product ID!";
 $_lang['shoplogistic_storeremains_err_double'] = "Остаток такого товара уже есть, отредактируйте существующий!";
 
+$_lang['shoplogistic_storebalance'] = 'Баланс магазина';
+$_lang['shoplogistic_storebalance_id'] = 'ID';
+$_lang['shoplogistic_storebalance_createdon'] = 'Дата';
+$_lang['shoplogistic_storebalance_store_id'] = 'ID магазина';
+$_lang['shoplogistic_storebalance_value'] = 'Сумма';
+$_lang['shoplogistic_storebalance_description'] = 'Описание';
+$_lang['shoplogistic_storebalance_type'] = 'Тип';
+
+$_lang['shoplogistic_storebalance_create'] = 'Создать запись';
+$_lang['shoplogistic_storebalance_update'] = 'Изменить запись';
+$_lang['shoplogistic_storebalance_remove'] = 'Удалить запись';
+$_lang['shoplogistic_storebalances_remove'] = 'Удалить записи';
+$_lang['shoplogistic_storebalance_remove_confirm'] = 'Вы уверены, что хотите удалить эту запись?';
+$_lang['shoplogistic_storebalances_remove_confirm'] = 'Вы уверены, что хотите удалить эти записи?';
+
 $_lang['shoplogistic_warehouseremains'] = 'Остатки склада';
 $_lang['shoplogistic_warehouseremains_id'] = 'ID';
 $_lang['shoplogistic_warehouseremains_product_name'] = 'Наименование товара';
@@ -309,3 +325,38 @@ $_lang["shoplogistic_day_3"] = 'ЧТ';
 $_lang["shoplogistic_day_4"] = 'ПТ';
 $_lang["shoplogistic_day_5"] = 'СБ';
 $_lang["shoplogistic_day_6"] = 'ВС';
+
+$_lang["shoplogistic_err_ae"] = "Уже есть объект с таким именем";
+$_lang["shoplogistic_field_required"] = "Поле обязательно для заполнения";
+
+$_lang["shoplogistic_menu_update"] = "Редактировать";
+$_lang["shoplogistic_menu_enable"] = "Включить";
+$_lang["shoplogistic_menu_disable"] = "Отключить";
+$_lang["shoplogistic_menu_remove"] = "Удалить";
+$_lang["shoplogistic_menu_remove_multiple"] = "Удалить выбранное";
+$_lang["shoplogistic_all"] = "Все";
+
+$_lang["shoplogistic_orders"] = "Заказы";
+$_lang["shoplogistic_orders_desc"] = "Заказы переданные дилерам и дистрибьюторам";
+
+$_lang["shoplogistic_settings"] = "Настройки";
+$_lang["shoplogistic_settings_desc"] = "Управляйте настройками маркетплейса";
+
+$_lang["shoplogistic_statuses"] = "Статусы";
+$_lang["shoplogistic_statuses_intro"] = "Здесь вы можете создавать новые статусы заказов. Не забудьте связать их со статусами miniShop2";
+$_lang["shoplogistic_id"] = "ID";
+$_lang["shoplogistic_name"] = "Наименование";
+$_lang["shoplogistic_rank"] = "Сортировка";
+$_lang["shoplogistic_active"] = "Активно";
+$_lang["shoplogistic_color"] = "Цвет";
+$_lang["shoplogistic_ms2status_id"] = "Статус miniShop2";
+$_lang["shoplogistic_description"] = "Описание";
+$_lang["shoplogistic_comment"] = "Комментарий";
+$_lang["shoplogistic_actions"] = "Действия";
+$_lang["shoplogistic_btn_create"] = "Создать";
+$_lang["shoplogistic_status_stores_available"] = "Доступен для магазинов";
+$_lang["shoplogistic_status_warehouses_available"] = "Доступен для складов";
+$_lang["shoplogistic_status_final"] = "Финальный";
+$_lang["shoplogistic_status_fixed"] = "Фиксированный";
+$_lang["shoplogistic_btx24_id"] = "ID Bitrix24";
+$_lang["shoplogistic_warehousestores_warehouse_store"] = "Если склад выполняет функцию магазина, выберите его";

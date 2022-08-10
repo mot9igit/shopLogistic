@@ -37,17 +37,14 @@ if ($parent) {
 	$tmp = $modx->getChildIds($parent);
 }
 //$modx->log(1, $parent.print_r($tmp, 1));
-$query = $modx->newQuery('modResource');
+$query = $modx->newQuery('slWarehouseShipment');
 $query->where(array(
-	'published' => true,
-	'deleted' => false,
-	'id:IN' => $tmp
+	'active' => true,
+	'warehouse_id' => $_REQUEST['col_id']? : $_REQUEST['warehouse_id']
 ));
-$resources = $modx->getCollection('modResource',$query);
+$resources = $modx->getCollection('slWarehouseShipment',$query);
 //$modx->log(1, count($resources));
-foreach($resources as $res){
-	$res->set("date", $res->getTVValue(explode('.',$dateSource)[1]));
-}
+
 
 $day_count = 1;
 $day = mktime(0, 0, 0, $month, $day_count, $year);

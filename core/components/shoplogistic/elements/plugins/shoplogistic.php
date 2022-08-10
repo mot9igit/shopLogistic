@@ -13,6 +13,30 @@ switch ($modx->event->name) {
 			'null' => true,
 			'default' => 0
 		];
+		$modx->map['msOrder']['fields']['warehouse_id'] = 0;
+		$modx->map['msOrder']['fieldMeta']['warehouse_id'] = [
+			'dbtype' => 'int',
+			'precision' => 11,
+			'phptype' => 'integer',
+			'null' => true,
+			'default' => 0
+		];
+		$modx->map['msOrder']['fields']['view_ids'] = '';
+		$modx->map['msOrder']['fieldMeta']['view_ids'] = [
+			'dbtype' => 'varchar',
+			'precision' => 255,
+			'phptype' => 'string',
+			'null' => true,
+			'default' => ''
+		];
+		$modx->loadClass('msOrderProduct');
+		$modx->map['msOrderProduct']['fields']['type'] = '';
+		$modx->map['msOrderProduct']['fieldMeta']['type'] = [
+			'dbtype' => 'text',
+			'phptype' => 'string',
+			'null' => true,
+			'default' => ''
+		];
 		break;
 	case 'OnLoadWebDocument':
 		$scriptProperties = array();
@@ -41,8 +65,7 @@ switch ($modx->event->name) {
 		}
 		break;
 	case 'OnDocFormRender':
-		$corePath = $modx->getOption('shoplogistic_core_path', array(), $modx->getOption('core_path') . 'components/shoplogistic/');
-		$controller->shopLogistic = $modx->getService('shopLogistic', 'shopLogistic', $corePath . 'model/');
+		$controller->shopLogistic = $shopLogistic;
 
 		$controller->shopLogistic->loadCustomJsCss();
 
@@ -81,7 +104,7 @@ switch ($modx->event->name) {
                                     layout: 'form',
                                     items:[
                                         {
-                                            title: 'Дилер',
+                                            title: 'Магазины и склады',
                                             xtype: 'fieldset',
                                             id: 'minishop2-fieldset-tc',
                                             labelAlign: 'top',
@@ -91,9 +114,15 @@ switch ($modx->event->name) {
                                                 {
                                                     xtype: 'shoplogistic-combo-store',
                             						name: 'store_id',
-                            						fieldLabel: _('shoplogistic_storeremains_store_name'),
+                            						fieldLabel: 'Дилер',
                             						anchor: '100%',
                                                     value: this.record.store_id
+                                                },{
+                                                    xtype: 'shoplogistic-combo-warehouse',
+                            						name: 'warehouse_id',
+                            						fieldLabel: 'Дистрибьютор',
+                            						anchor: '100%',
+                                                    value: this.record.warehouse_id
                                                 }
                                             ]
                                         }
@@ -128,6 +157,42 @@ switch ($modx->event->name) {
 			$msOrder->save();
 		}
 
+		break;
+	case 'msOnChangeOrderStatus':
+		if ($status = $modx->getObject('msOrderStatus', array('id' => $status, 'active' => 1))) {
+			if ($miniShop2 = $modx->getService('miniShop2')) {
+				$miniShop2->initialize($modx->context->key, array(
+					'json_response' => true,
+				));
+				if (!($miniShop2 instanceof miniShop2)) {
+					return;
+				}
+
+				if($status->id == 2){
+					$pls = $order->toArray();
+					$tax = $modx->getOption('shoplogistic_tax_percent') / 100;
+					$cost = $pls['cost'] * (1 - $tax);
+					$store_id = $pls['store_id'];
+
+					// add log
+					$balance = $modx->newObject("slStoreBalance");
+					$balance->set("store_id", $store_id);
+					$balance->set("type", 1);
+					$balance->set("value", $cost);
+					$balance->set("createdon", date('Y-m-d H:i:s'));
+					$balance->set("description", "Начисление за заказ №".$pls['num']);
+					$balance->save();
+
+					//add to store
+					$store = $modx->getObject("slStores", $store_id);
+					if($store){
+						$b = $store->get('balance');
+						$store->set('balance', $b + $cost);
+						$store->save();
+					}
+				}
+			}
+		}
 		break;
 	case 'OnHandleRequest':
 		if ($modx->context->get('key') == 'mgr' || $shopLogistic->isAjaxRequestInAssets()) {

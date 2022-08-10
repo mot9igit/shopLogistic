@@ -1,5 +1,10 @@
 Changelog for shopLogistic.
 
+0.0.8-pl
+==============
+- Optimize geolocation services
+- Add a any tools to Profile
+
 0.0.7-pl
 ==============
 - Add geolocation services

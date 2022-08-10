@@ -28,5 +28,4 @@ if (empty($_SERVER['HTTP_X_REQUESTED_WITH']) || $_SERVER['HTTP_X_REQUESTED_WITH'
 		echo $response = $out;
 	}
 }
-
 @session_write_close();

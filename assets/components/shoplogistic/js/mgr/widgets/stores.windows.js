@@ -82,6 +82,14 @@ Ext.extend(shopLogistic.window.CreateStore, shopLogistic.window.Default, {
             id: config.id + '-apikey',
             anchor: '99%',
             allowBlank: false,
+        },{
+            xtype: 'textfield',
+            fieldLabel: _('shoplogistic_store_btx24_id'),
+            emptyText: _('shoplogistic_btx24_id_placeholder'),
+            name: 'btx24_id',
+            id: config.id + '-btx24_id',
+            anchor: '99%',
+            allowBlank: true,
         }, {
             xtype: 'xcheckbox',
             boxLabel: _('shoplogistic_store_active'),
@@ -311,6 +319,12 @@ Ext.extend(shopLogistic.window.UpdateStore, shopLogistic.window.CreateStore, {
                 title: _('shoplogistic_storeremains'),
                 items: [{
                     xtype: 'shoplogistic-grid-storeremains',
+                    record: config.record,
+                }]
+            }, {
+                title: _('shoplogistic_storebalance'),
+                items: [{
+                    xtype: 'shoplogistic-grid-storebalance',
                     record: config.record,
                 }]
             }]

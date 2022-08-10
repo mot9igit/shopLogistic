@@ -25,4 +25,12 @@ return [
 		'file' => 'ms2_get_order',
 		'description' => 'Чанк для вывода информации о заказе',
 	],
+	'sl.geodata' => [
+		'file' => 'sl.geodata',
+		'description' => 'Чанк для вывода информации о геолокации',
+	],
+	'sl.geomodal' => [
+		'file' => 'sl.geomodal',
+		'description' => 'Чанк для вывода информации о геолокации в модальном окне',
+	],
 ];

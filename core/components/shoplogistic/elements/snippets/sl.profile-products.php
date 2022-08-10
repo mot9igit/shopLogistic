@@ -91,8 +91,8 @@ if (!empty($link) && !empty($master)) {
 	$where['Link.slave'] = $slave;
 }
 
-$modx->log(1, $_REQUEST['pageId'] . '_' . $scriptProperties['type'] . '_' . $scriptProperties['col_id']);
-$modx->log(1, print_r($_SESSION['sl_filters'][$_REQUEST['pageId'] . '_' . $scriptProperties['type'] . '_' . $scriptProperties['col_id']], 1));
+//$modx->log(1, $_REQUEST['pageId'] . '_' . $scriptProperties['type'] . '_' . $scriptProperties['col_id']);
+//$modx->log(1, print_r($_SESSION['sl_filters'][$_REQUEST['pageId'] . '_' . $scriptProperties['type'] . '_' . $scriptProperties['col_id']], 1));
 
 if ($_REQUEST['pageId']) {
 	if ($_SESSION['sl_filters'][$_REQUEST['pageId'] . '_' . $scriptProperties['type'] . '_' . $scriptProperties['col_id']]) {

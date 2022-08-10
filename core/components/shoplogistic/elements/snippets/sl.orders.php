@@ -14,21 +14,44 @@ if (!$modx->loadClass('pdofetch', MODX_CORE_PATH . 'components/pdotools/model/pd
 $pdoFetch = new pdoFetch($modx, $scriptProperties);
 // снипет выводит заказы текущего пользователя
 $strs = array();
-$criteria = array(
-	"user_id" => $modx->user->id
-);
 
-$stores = $modx->getCollection("slStoreUsers", $criteria);
-foreach($stores as $store){
-	$strs[] = $store->get("store_id");
+if($_GET['type'] == 'slWarehouse'){
+	/*
+	$criteria = array(
+		"warehouse_id" => $_GET['col_id']
+	);
+	$stores = $modx->getCollection("slWarehouseStores", $criteria);
+	foreach($stores as $store){
+		$strs[] = $store->get("store_id");
+	}
+	*/
+	if($_GET['col_id']){
+		$strs[] = $_GET['col_id'];
+	}
+	$where = array(
+		'warehouse_id:IN' => $strs
+	);
+}else{
+	if($_GET['col_id']){
+		$strs[] = $_GET['col_id'];
+	}
+	$where = array(
+		'store_id:IN' => $strs
+	);
 }
-
-// подхватываем заказы текущего пользователя
-
+if($_GET['show_proccessed'] == 1){
+	$where["AND:status:IN"] = array(3,4);
+}else{
+	$where["AND:status:NOT IN"] = array(3,4);
+}
 $q = $modx->newQuery('msOrder');
-$q->where(array('store_id:IN' => $strs));
+$q->where($where);
 $q->sortby('id','DESC');
-$q->limit(10,0);
+$total = $modx->getCount("msOrder", $q);
+$limit = $modx->getOption('limit', $scriptProperties, 10);
+$offset = $modx->getOption('offset', $scriptProperties, 0);
+$q->limit($limit, $offset);
+$totalVar = $modx->getOption('totalVar', $scriptProperties, 'page.total');
 $results = $modx->getCollection('msOrder', $q);
 $data = array();
 
@@ -116,7 +139,6 @@ foreach ($results as $result) {
 		'sortdir' => 'asc',
 		'groupby' => 'msOrderProduct.id',
 		'fastMode' => false,
-		'limit' => 0,
 		'return' => 'data',
 		'decodeJSON' => true,
 		'nestedChunkPrefix' => 'sl_',
@@ -194,4 +216,5 @@ foreach ($results as $result) {
 	$output_modal .= $pdoFetch->getChunk($modal_tpl, $pls);
 }
 $modx->regClientHTMLBlock($output_modal);
+$modx->setPlaceholder($totalVar, $total);
 return $output;

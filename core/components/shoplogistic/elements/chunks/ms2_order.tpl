@@ -3,7 +3,7 @@
         <div class="cart_wrap">
             <div class="sl-row">
                 <div class="d-col-lg-8">
-                    {$_modx->runSnippet("sl.ms_getfields", [])}
+                    {$_modx->runSnippet("!sl.ms_getfields", [])}
                     {$_modx->runSnippet("!msCart", [
                     "tpl" => "tpl.shoplogistic.ms2_cart"
                     ])}
@@ -19,9 +19,9 @@
                                         <div class="checkers sl-row">
                                             {foreach $deliveries as $delivery index=$index}
                                                 {var $checked = !$order.delivery && $index == 0 || $delivery.id == $order.delivery}
-                                                <div class="d-col">
+                                                <div class="d-col input-parent">
                                                     <div class="checkbox">
-                                                        <label class="col-form-label delivery input-parent">
+                                                        <label class="col-form-label delivery">
                                                             <input type="radio" name="delivery" value="{$delivery.id}" id="delivery_{$delivery.id}" data-payments="{$delivery.payments | json_encode}" {$checked ? 'checked' : ''}>
                                                             <div class="visual_block">
                                                                 <div class="visual_block_inner">
@@ -43,9 +43,9 @@
                                         <div class="checkers sl-row">
                                             {foreach $payments as $payment index=$index}
                                                 {var $checked = !$order.payment && $index == 0 || $payment.id == $order.payment}
-                                                <div class="d-col">
+                                                <div class="d-col input-parent">
                                                     <div class="checkbox">
-                                                        <label class="col-form-label payment input-parent">
+                                                        <label class="col-form-label payment">
                                                             <input type="radio" name="payment" value="{$payment.id}" id="payment_{$payment.id}" {$checked ? 'checked' : ''}>
                                                             <div class="visual_block">
                                                                 <div class="visual_block_inner">
@@ -94,21 +94,31 @@
                                                        name="address" value='{$form['address']?:$_modx->getPlaceholder("address.address")}'
                                                        class="base_input sl_address">
                                                 <label for="address" class="s-complex-input__label">{('ms2_frontend_address') | lexicon}</label>
-                                                <span class="desc">Выберите подходящий населенный пункт из списка</span>
                                             </div>
+                                            <div class="sl-alert sl-alert-info">Выберите подходящий адрес из списка</div>
                                             <div class="sl_address_block" style="display: none;">
                                                 <input type="hidden" name="fias" value=""/>
                                                 <input type="hidden" name="kladr" value=""/>
                                                 <input type="hidden" name="geo" value=""/>
                                                 <input type="hidden" name="delivery_data" class="delivery_data" value=""/>
+                                                {foreach [
+                                                'index' => 'd-col-12 d-col-md-4',
+                                                'region' => 'd-col-12 d-col-md-8',
+                                                'city' => 'd-col-12',
+                                                'street' => 'd-col-12 d-col-md-6',
+                                                'building' => 'd-col-6 d-col-md-3',
+                                                'room' => 'd-col-6 d-col-md-3'] as $field => $val}
+                                                    <input type="hidden" id="{$field}" name="{$field}" value='{$form[$field]?:$_modx->getPlaceholder("address."~$field)}'/>
+                                                {/foreach}
+                                                <!--
                                                 <div class="sl-row">
                                                     {foreach [
-                                                    'index' => 'd-col-12 d-col-md-4',
-                                                    'region' => 'd-col-12 d-col-md-8',
-                                                    'city' => 'd-col-12',
-                                                    'street' => 'd-col-12 d-col-md-6',
-                                                    'building' => 'd-col-6 d-col-md-3',
-                                                    'room' => 'd-col-6 d-col-md-3'] as $field => $val}
+                                                'index' => 'd-col-12 d-col-md-4',
+                                                'region' => 'd-col-12 d-col-md-8',
+                                                'city' => 'd-col-12',
+                                                'street' => 'd-col-12 d-col-md-6',
+                                                'building' => 'd-col-6 d-col-md-3',
+                                                'room' => 'd-col-6 d-col-md-3'] as $field => $val}
                                                         <div class="{$val}">
                                                             <div class="form_input_group input_pl input-parent">
                                                                 <input type="text" id="{$field}" placeholder="{('ms2_frontend_' ~ $field) | lexicon}"
@@ -119,6 +129,7 @@
                                                         </div>
                                                     {/foreach}
                                                 </div>
+                                                -->
                                             </div>
                                         </div>
                                         {$_modx->runSnippet("!sl.services", [
@@ -166,9 +177,11 @@
                             <button class="sl-btn sl-btn-primary pseudo_submit">
                                 <span class="tm">Оформить заказ</span>
                             </button>
+                            <!--
                             <div class="">
                                 <button type="button" data-toggle="modal" data-target="#callback" class="sl-btn sl-btn-text texter"> <i class="fa fa-phone"></i> Оформить по телефону</button>
                             </div>
+                            -->
                         </div>
                     </div>
                 </div>

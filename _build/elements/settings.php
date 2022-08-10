@@ -61,6 +61,22 @@ return [
 		'value' => 'contact,email,phone',
 		'area' => 'shoplogistic_main',
 	],
+	'tax_percent' => [
+		'xtype' => 'numberfield',
+		'decimalPrecision' => 2,
+		'value' => 2,
+		'area' => 'shoplogistic_main',
+	],
+	'default_store' => [
+		'xtype' => 'shoplogistic-combo-store',
+		'value' => 5,
+		'area' => 'shoplogistic_main',
+	],
+	'mode' => [
+		'xtype' => 'numberfield',
+		'value' => 1,
+		'area' => 'shoplogistic_main',
+	],
 	'phx_prefix' => [
 		'xtype' => 'textfield',
 		'value' => 'cf.',

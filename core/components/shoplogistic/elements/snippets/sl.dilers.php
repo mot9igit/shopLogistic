@@ -20,8 +20,7 @@ $id = $modx->user->id;
 $criteria = array(
 	"user_id" => $id,
 	"warehouse_id" => $_REQUEST['col_id']
-);
-$modx->log(1, print_r($criteria, 1));
+);;
 $whs = $modx->getObject("slWarehouseUsers", $criteria);
 if(!$whs){
 	$out['access_denied'] = 1;
@@ -38,7 +37,23 @@ if(!$out['access_denied']){
 	foreach($stores as $store){
 		$s = $store->getOne("Store");
 		if($s){
-			$out['stores'][] = $s->toArray();
+			$tmp = $s->toArray();
+			$city = $s->getOne('city');
+			if($city){
+				$tmp['city'] = $city->toArray();
+			}
+			$query = $modx->newQuery("slWarehouseShipment");
+			$query->where(array(
+				"date:>=" => date('Y-m-d H:i:s') ,
+				"warehouse_id" => $_REQUEST['col_id'],
+				"FIND_IN_SET(\"".$tmp["id"]."\", store_ids) > 0"
+			));
+			$query->sortby('date','ASC');
+			$obj = $modx->getObject("slWarehouseShipment", $query);
+			if($obj){
+				$tmp['shipment'] = $obj->toArray();
+			}
+			$out['stores'][] = $tmp;
 		}
 	}
 }

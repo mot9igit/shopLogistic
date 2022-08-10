@@ -33,6 +33,12 @@ $_lang['setting_shoplogistic_open_fields_store'] = 'Поля доступные 
 $_lang['setting_shoplogistic_open_fields_store_desc'] = 'Список ключей через запятую';
 $_lang['setting_shoplogistic_open_fields_warehouse'] = 'Поля доступные для редактирование в ЛК Склада';
 $_lang['setting_shoplogistic_open_fields_warehouse_desc'] = 'Список ключей через запятую';
+$_lang['setting_shoplogistic_tax_percent'] = 'Процент комиссии для вознаграждений';
+$_lang['setting_shoplogistic_tax_percent_desc'] = 'Данный процент будет вычитаться при начислении финансов за заказ';
+$_lang['setting_shoplogistic_default_store'] = 'Магазин по умолчанию (только на доставку)';
+$_lang['setting_shoplogistic_default_store_desc'] = "У данного магазина будет игнорироваться остаток товара. При отображении товаров будет учитываться параметр \"Не доступен для заказа\"";
+$_lang['setting_shoplogistic_mode'] = 'Режим работы';
+$_lang['setting_shoplogistic_mode_desc'] = '1 - показываем остатки магазина и дистрибьютора, 2 - показываем все остатки, заказ отсылаем в ближайший магазин';
 
 $_lang['setting_shoplogistic_phx_prefix'] = 'Префикс плейсхолдеров';
 $_lang['setting_shoplogistic_cityfolder_phx_prefix_desc'] = 'По данному префиксу можно получить доступ к плейсхолдерам';

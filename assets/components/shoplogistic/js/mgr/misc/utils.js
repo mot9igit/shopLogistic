@@ -1,3 +1,15 @@
+shopLogistic.utils.formatDate = function (string) {
+    if (string && string != '0000-00-00 00:00:00' && string != '-1-11-30 00:00:00' && string != 0) {
+        var date = /^[0-9]+$/.test(string)
+            ? new Date(string * 1000)
+            : new Date(string.replace(/(\d+)-(\d+)-(\d+)/, '$2/$3/$1'));
+
+        return date.strftime(MODx.config['ms2_date_format']);
+    } else {
+        return '&nbsp;';
+    }
+};
+
 shopLogistic.utils.renderBoolean = function (value) {
     return value
         ? String.format('<span class="green">{0}</span>', _('yes'))
@@ -113,6 +125,140 @@ shopLogistic.utils.userLink = function (value, id, blank) {
     );
 };
 
+shopLogistic.utils.productLink = function (value, id, blank) {
+    if (!value) {
+        return '';
+    } else if (!id) {
+        return value;
+    }
+
+    return String.format(
+        '<a href="index.php?a=resource/update&id={0}" class="ms2-link" target="{1}">{2}</a>',
+        id,
+        (blank ? '_blank' : '_self'),
+        value
+    );
+};
+
+shopLogistic.utils.renderImage = function (value) {
+    if (Ext.isEmpty(value)) {
+        value = shopLogistic.config['default_thumb'];
+    } else {
+        if (!/\/\//.test(value)) {
+            if (!/^\//.test(value)) {
+                value = '/' + value;
+            }
+        }
+    }
+
+    return String.format('<img src="{0}" />', value);
+};
+
+shopLogistic.utils.renderBadge = function (value, cell, row) {
+    var color = row.data.color || 'CACACA',
+        textColor = '000000';
+
+    if (row.data.color) {
+        // HEX to RGB
+        var r = g = b = 0;
+        r = '0x' + color[0] + color[1];
+        g = '0x' + color[2] + color[3];
+        b = '0x' + color[4] + color[5];
+
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        // RGB to HEX
+        var cmin = Math.min(r,g,b),
+            cmax = Math.max(r,g,b),
+            delta = cmax - cmin,
+            h = s = l = 0;
+
+        if (delta == 0) {
+            h = 0;
+        } else if (cmax == r) {
+            h = ((g - b) / delta) % 6;
+        } else if (cmax == g) {
+            h = (b - r) / delta + 2;
+        } else {
+            h = (r - g) / delta + 4;
+        }
+
+        h = Math.round(h * 60);
+
+        if (h < 0) {
+            h += 360;
+        }
+
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        textColor = l > 50 ? '000000' : 'FFFFFF';
+    }
+
+
+    //noinspection CssInvalidPropertyValue
+    return row.data.hasOwnProperty('active') && !row.data.active
+        ? value
+        : String.format('<span class="shoplogistic-row-badge" style="background-color:#{0};color:#{1}">{2}</span>', color, textColor, value);
+};
+
+
+shopLogistic.utils.renderBadgems2  = function (value, cell, row) {
+    var color = row.data.ms2status_color || 'CACACA',
+        textColor = '000000';
+
+    if (row.data.ms2status_color) {
+        // HEX to RGB
+        var r = g = b = 0;
+        r = '0x' + color[0] + color[1];
+        g = '0x' + color[2] + color[3];
+        b = '0x' + color[4] + color[5];
+
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        // RGB to HEX
+        var cmin = Math.min(r,g,b),
+            cmax = Math.max(r,g,b),
+            delta = cmax - cmin,
+            h = s = l = 0;
+
+        if (delta == 0) {
+            h = 0;
+        } else if (cmax == r) {
+            h = ((g - b) / delta) % 6;
+        } else if (cmax == g) {
+            h = (b - r) / delta + 2;
+        } else {
+            h = (r - g) / delta + 4;
+        }
+
+        h = Math.round(h * 60);
+
+        if (h < 0) {
+            h += 360;
+        }
+
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        textColor = l > 50 ? '000000' : 'FFFFFF';
+    }
+
+
+    //noinspection CssInvalidPropertyValue
+    return row.data.hasOwnProperty('active') && !row.data.active
+        ? value
+        : String.format('<span class="shoplogistic-row-badge" style="background-color:#{0};color:#{1}">{2}</span>', color, textColor, row.data.ms2status_name);
+};
+
 shopLogistic.utils.genRegExpString = function (str) {
     var str_new = str;
 
@@ -183,3 +329,72 @@ shopLogistic.utils.genRegExpString = function (str) {
         return r;
     }
 }
+shopLogistic.utils.Hash = {
+    get: function () {
+        var vars = {}, hash, splitter, hashes;
+        if (!this.oldbrowser()) {
+            var pos = window.location.href.indexOf('?');
+            hashes = (pos != -1) ? decodeURIComponent(window.location.href.substr(pos + 1)) : '';
+            splitter = '&';
+        } else {
+            hashes = decodeURIComponent(window.location.hash.substr(1));
+            splitter = '/';
+        }
+
+        if (hashes.length == 0) {
+            return vars;
+        } else {
+            hashes = hashes.split(splitter);
+        }
+
+        for (var i in hashes) {
+            if (hashes.hasOwnProperty(i)) {
+                hash = hashes[i].split('=');
+                if (typeof hash[1] == 'undefined') {
+                    vars['anchor'] = hash[0];
+                } else {
+                    vars[hash[0]] = hash[1];
+                }
+            }
+        }
+        return vars;
+    },
+
+    set: function (vars) {
+        var hash = '';
+        for (var i in vars) {
+            if (vars.hasOwnProperty(i)) {
+                hash += '&' + i + '=' + vars[i];
+            }
+        }
+
+        if (!this.oldbrowser()) {
+            if (hash.length != 0) {
+                hash = '?' + hash.substr(1);
+            }
+            window.history.pushState(hash, '', document.location.pathname + hash);
+        } else {
+            window.location.hash = hash.substr(1);
+        }
+    },
+
+    add: function (key, val) {
+        var hash = this.get();
+        hash[key] = val;
+        this.set(hash);
+    },
+
+    remove: function (key) {
+        var hash = this.get();
+        delete hash[key];
+        this.set(hash);
+    },
+
+    clear: function () {
+        this.set({});
+    },
+
+    oldbrowser: function () {
+        return !(window.history && history.pushState);
+    },
+};

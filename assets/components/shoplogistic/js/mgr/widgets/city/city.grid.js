@@ -43,7 +43,7 @@ Ext.reg('shoplogistic-grid-city', shopLogistic.grid.City);
 Ext.extend(shopLogistic.grid.City, MODx.grid.Grid, {
     getColumns: function () {
         var columns = {
-            id: {sortable: true, width: 40, hidden: true},
+            id: {sortable: true, width: 40, hidden: false},
             key: {sortable: true, width: 200},
             city: {sortable: true, width: 200},
             city_r: {sortable: true, width: 200},
@@ -57,6 +57,7 @@ Ext.extend(shopLogistic.grid.City, MODx.grid.Grid, {
         };
         
         var fields = [];
+        //fields.push(columns['id']);
         for (i in shopLogistic.config['city_fields']) {
             if (!shopLogistic.config['city_fields'].hasOwnProperty(i)) {
                 continue;
